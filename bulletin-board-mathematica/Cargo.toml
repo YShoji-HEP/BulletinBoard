@@ -1,0 +1,21 @@
+[package]
+name = "bulletin-board-mathematica"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Mathematica client for BulletinBoard"
+repository = "https://github.com/YShoji-HEP/BulletinBoard"
+readme = "README.md"
+keywords = ["object_storage", "database", "debugging"]
+categories = ["database", "development-tools::debugging"]
+
+[dependencies]
+bulletin-board-client = "0.1.0"
+wolfram-library-link = "0.2.10"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = []
+unix = ["bulletin-board-client/unix"]

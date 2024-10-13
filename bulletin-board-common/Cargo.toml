@@ -1,0 +1,13 @@
+[package]
+name = "bulletin-board-common"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Common source for BulletinBoard"
+repository = "https://github.com/YShoji-HEP/BulletinBoard"
+readme = "README.md"
+keywords = ["object_storage", "database", "debugging"]
+categories = ["database", "database-implementations", "development-tools::debugging"]
+
+[dependencies]
+serde = { version = "1.0.209", features = ["derive"] }
