@@ -38,12 +38,13 @@ impl BBServer {
         {
             let datetime = Local::now().to_string();
             let version = env!("CARGO_PKG_VERSION");
-            let message = format!("{datetime} Bulletin Board Server v{version} started.");
+            let message = format!("{datetime} Bulletin Board Server v{version} started.\n");
             let mut log_file = File::options()
                 .write(true)
                 .create(true)
                 .truncate(false)
                 .open(&*LOG_FILE)?;
+            log_file.seek(SeekFrom::End(0))?;
             log_file.write_all(message.as_bytes())?;
         }
         let listener = TcpOrUnixListener::bind(&*LISTEN_ADDR)?;
@@ -52,7 +53,7 @@ impl BBServer {
             if let Err(err) = self.process(stream) {
                 let err = Box::leak(err);
                 let datetime = Local::now().to_string();
-                let message = format!("{datetime} {err}");
+                let message = format!("{datetime} {err}\n");
                 eprintln!("{message}");
 
                 let mut log_file = File::options()
@@ -60,6 +61,7 @@ impl BBServer {
                     .create(true)
                     .truncate(false)
                     .open(&*LOG_FILE)?;
+                log_file.seek(SeekFrom::End(0))?;
                 log_file.write_all(message.as_bytes())?;
             };
         }
@@ -258,7 +260,8 @@ impl BBServer {
         Ok(())
     }
     fn archive(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag, acv_name): (String, String, String) = ciborium::from_reader(stream)?;
+        let (var_name, var_tag, acv_name): (String, String, String) =
+            ciborium::from_reader(stream)?;
         self.bulletinboard.archive(var_name, var_tag, acv_name)?;
         Ok(())
     }
