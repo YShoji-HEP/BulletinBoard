@@ -38,9 +38,11 @@ fn main() {
 Environment Variables
 ---------------------
 * BB_ADDR = "127.0.0.1:7578" or "/tmp/bb.sock"
+
 Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. When UNIX socket is used, the address should be the path to the uncreated socket.
 
 Crate Features
 --------------
 * `unix`
+
 Use the UNIX socket instead of TCP. Only for UNIX-like OS.

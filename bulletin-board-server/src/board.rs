@@ -1,5 +1,5 @@
 use crate::bulletin::{Bulletin, BulletinBackend};
-use crate::{ACV_DIR, TMP_DIR, TOT_MEM_LIMIT, FILE_THRETHOLD};
+use crate::{ACV_DIR, FILE_THRETHOLD, TMP_DIR, TOT_MEM_LIMIT};
 use chrono::DateTime;
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -148,9 +148,9 @@ impl BulletinBoard {
         &mut self,
         var_name: String,
         var_tag: String,
-        name: String,
+        acv_name: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let dir = format!("{}/{}", *ACV_DIR, name);
+        let dir = format!("{}/{}", *ACV_DIR, acv_name);
         if !Path::new(&dir).exists() {
             fs::create_dir_all(&dir)?;
             std::fs::write(dir.clone() + "/version.txt", env!("CARGO_PKG_VERSION"))?;
@@ -189,7 +189,7 @@ impl BulletinBoard {
                                 &mut buffer,
                             )?;
                             temp.push(Bulletin::from_archive(
-                                &name,
+                                &acv_name,
                                 offset,
                                 bulletin.datasize,
                                 bulletin.timestamp,
@@ -203,11 +203,12 @@ impl BulletinBoard {
                 }
                 if !temp.is_empty() {
                     ciborium::into_writer(
-                        &(var_name.clone(), var_tag.clone(), temp.len()),
+                        &(var_name.clone(), var_tag.clone(), temp.len() as u64),
                         &mut file_meta,
                     )?;
+                    buffer.set_position(0);
                     io::copy(&mut buffer, &mut file_meta)?;
-                    let key = (var_name.clone(), format!("{name}:{var_tag}"));
+                    let key = (var_name.clone(), format!("{acv_name}:{var_tag}"));
                     let entry = self.bulletins.entry(key).or_default();
                     for bulletin in temp {
                         entry.push(bulletin);
@@ -268,20 +269,20 @@ impl BulletinBoard {
         )?;
         Ok(())
     }
-    pub fn delete_archive(&self, name: String) -> Result<(), std::io::Error> {
-        fs::remove_dir_all(format!("{}/{}", *ACV_DIR, name))?;
+    pub fn delete_archive(&self, acv_name: String) -> Result<(), std::io::Error> {
+        fs::remove_dir_all(format!("{}/{}", *ACV_DIR, acv_name))?;
         Ok(())
     }
-    pub fn dump(&mut self, name: String) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn dump(&mut self, acv_name: String) -> Result<(), Box<dyn std::error::Error>> {
         let keys: Vec<_> = self.bulletins.keys().cloned().collect();
         for (var_name, var_tag) in keys {
-            self.archive(var_name.clone(), var_tag.clone(), name.clone())?;
+            self.archive(var_name.clone(), var_tag.clone(), acv_name.clone())?;
         }
         Ok(())
     }
-    pub fn restore(&mut self, name: String) -> Result<(), Box<dyn std::error::Error>> {
-        let filename_data = format!("{}/{}/data.bin", *ACV_DIR, name);
-        let filename_meta = format!("{}/{}/meta.bin", *ACV_DIR, name);
+    pub fn restore(&mut self, acv_name: String) -> Result<(), Box<dyn std::error::Error>> {
+        let filename_data = format!("{}/{}/data.bin", *ACV_DIR, acv_name);
+        let filename_meta = format!("{}/{}/meta.bin", *ACV_DIR, acv_name);
         let file_data = File::open(&filename_data)?;
         let mut file_meta = File::open(&filename_meta)?;
         while let Ok((var_name, var_tag, revisions)) =

@@ -21,7 +21,7 @@ export BB_LISTEN_ADDR = "0.0.0.0:7578"
 bulletin-board-server
 ```
 
-Rust client:
+Rust client: (see [`bulletin-board-client`](bulletin-board-client/README.md))
 ```rust
 use bulletin_board_client as bbclient;
 use array_object::*;
@@ -35,7 +35,7 @@ fn main() {
 }
 ```
 
-Mathematica client:
+Mathematica client: (see [`bulletin-board-mathematica`](bulletin-board-mathematica/README.md))
 ```
 << "bulletin-board.wl";
 BBLoadFunctions["127.0.0.1:7578"];
@@ -47,6 +47,7 @@ ToDo
 ----
 - [ ] Support for other languages. [Mathematica, Python, Julia, Go, C++, Fortran, ...]
 - [ ] Windows support. 
+- [ ] More informative logs.
 
 Q&A
 --------------

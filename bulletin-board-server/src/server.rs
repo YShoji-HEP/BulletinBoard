@@ -14,7 +14,9 @@ use crate::{LISTEN_ADDR, LOG_FILE};
 use bulletin_board_common::*;
 use chrono::Local;
 use serde_bytes::ByteBuf;
+use std::fs::File;
 use std::io;
+use std::io::Write;
 
 pub struct BBServer {
     bulletinboard: BulletinBoard,
@@ -37,7 +39,12 @@ impl BBServer {
             let datetime = Local::now().to_string();
             let version = env!("CARGO_PKG_VERSION");
             let message = format!("{datetime} Bulletin Board Server v{version} started.");
-            std::fs::write(&*LOG_FILE, message)?;
+            let mut log_file = File::options()
+                .write(true)
+                .create(true)
+                .truncate(false)
+                .open(&*LOG_FILE)?;
+            log_file.write_all(message.as_bytes())?;
         }
         let listener = TcpOrUnixListener::bind(&*LISTEN_ADDR)?;
         for stream in listener.incoming() {
@@ -47,7 +54,13 @@ impl BBServer {
                 let datetime = Local::now().to_string();
                 let message = format!("{datetime} {err}");
                 eprintln!("{message}");
-                std::fs::write(&*LOG_FILE, message)?;
+
+                let mut log_file = File::options()
+                    .write(true)
+                    .create(true)
+                    .truncate(false)
+                    .open(&*LOG_FILE)?;
+                log_file.write_all(message.as_bytes())?;
             };
         }
         Ok(())
@@ -245,13 +258,13 @@ impl BBServer {
         Ok(())
     }
     fn archive(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag, name): (String, String, String) = ciborium::from_reader(stream)?;
-        self.bulletinboard.archive(var_name, var_tag, name)?;
+        let (var_name, var_tag, acv_name): (String, String, String) = ciborium::from_reader(stream)?;
+        self.bulletinboard.archive(var_name, var_tag, acv_name)?;
         Ok(())
     }
     fn load(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let name: String = ciborium::from_reader(stream)?;
-        self.bulletinboard.load(name)?;
+        let acv_name: String = ciborium::from_reader(stream)?;
+        self.bulletinboard.load(acv_name)?;
         Ok(())
     }
     fn list_archive(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
@@ -288,8 +301,8 @@ impl BBServer {
         Ok(())
     }
     fn restore(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let name: String = ciborium::from_reader(stream)?;
-        self.bulletinboard.restore(name)?;
+        let acv_name: String = ciborium::from_reader(stream)?;
+        self.bulletinboard.restore(acv_name)?;
         Ok(())
     }
     fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {

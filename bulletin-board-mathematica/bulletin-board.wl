@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["DBGBB`"];
+BeginPackage["BulletinBoardClient`"];
 
 
 BBLoadFunctions::usage = "BBLoadFunctions[address]";
@@ -10,7 +10,7 @@ BBStatus::usage = "BBStatus[]";
 BBLog::usage = "BBLog[]";
 BBViewBoard::usage = "BBViewBoard[]";
 BBGetInfo::usage = "BBGetInfo[varName, varTag(optional)]";
-BBClearRevision::usage = "BBClearRevision[varName, varTag, revisions]";
+BBClearRevisions::usage = "BBClearRevisions[varName, varTag, revisions]";
 BBRemove::usage = "BBRemove[varName, varTag]";
 BBArchive::usage = "BBArchive[varName, varTag, archive]";
 BBLoad::usage = "BBLoad[archiveName]";
