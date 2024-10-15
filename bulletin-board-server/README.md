@@ -1,5 +1,9 @@
 Bulletin Board Server
 =====================
+[![Crates.io](https://img.shields.io/crates/v/bulletin-board-server?style=flat-square)](https://crates.io/crates/bulletin-board-server)
+[![Crates.io](https://img.shields.io/crates/d/bulletin-board-server?style=flat-square)](https://crates.io/crates/bulletin-board-server)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
+
 Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) for debugging and data taking purposes.
 
 `BulletinBoard` is a part of [`dbgbb`](https://github.com/YShoji-HEP/dbgbb) project.
@@ -23,35 +27,26 @@ bulletin-board-server
 
 Environment Variables
 ---------------------
-* BB_LISTEN_ADDR = "127.0.0.1:7578" or "/tmp/bb.sock"
+|Variable|Default|Description|
+|-|-|-|
+|BB_LISTEN_ADDR|"127.0.0.1:7578" or "/tmp/bb.sock"|Listen address of the bulletin board server. When UNIX socket is used, the address should be the path to the uncreated socket.|
+|BB_TMP_DIR|"./bb_tmp"|Directory for temporary data.|
+|BB_ACV_DIR|"./bb_acv"|Directory for archives.|
+|BB_TOT_MEM_LIMIT|"1GiB"|Total memory limit. If the memory exceeds the limit, all the bulletins are saved as files.|
+|BB_FILE_THRETHOLD|"1MiB"|Beyond this threthold, the bulletin is saved as a file.|
+|BB_LOG_FILE|"./bulletin-board.log"|Location of the log file.|
 
-Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. When UNIX socket is used, the address should be the path to the uncreated socket.
-
-* BB_TMP_DIR = "./bb_tmp"
-
-Directory for temporary data.
-
-* BB_ACV_DIR = "./bb_acv"
-
-Directory for archives.
-
-* BB_TOT_MEM_LIMIT = "1GiB"
-
-Total memory limit. If the memory exceeds the limit, all the bulletins are saved as files.
-
-* BB_FILE_THRETHOLD = "1MiB"
-
-Beyond this threthold, the bulletin is saved as a file.
-
-* BB_LOG_FILE = "./bulletin-board.log"
-
-Location of the log file.
+Command line options
+---------------------
+|Short|Long|Description|
+|-|-|-|
+|-d|--debug|Log to stdout.|
 
 Crate Features
 --------------
-* `unix`
-
-Use the UNIX socket instead of TCP. Only for UNIX-like OS.
+|Feature|Description|
+|-|-|
+|`unix`|Use the UNIX socket instead of TCP. Only for UNIX-like OS.|
 
 Q&A
 --------------

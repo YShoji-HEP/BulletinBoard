@@ -1,5 +1,8 @@
 Rust client for BulletinBoard
 =============================
+[![Crates.io](https://img.shields.io/crates/v/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
+[![Crates.io](https://img.shields.io/crates/d/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
 For more details, see [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard).
 
 Example
@@ -37,12 +40,13 @@ fn main() {
 ```
 Environment Variables
 ---------------------
-* BB_ADDR = "127.0.0.1:7578" or "/tmp/bb.sock"
+|Variable|Default|Description|
+|-|-|-|
+|BB_ADDR|"127.0.0.1:7578" or "/tmp/bb.sock"|Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. When UNIX socket is used, the address should be the path to the uncreated socket.|
 
-Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. When UNIX socket is used, the address should be the path to the uncreated socket.
 
 Crate Features
 --------------
-* `unix`
-
-Use the UNIX socket instead of TCP. Only for UNIX-like OS.
+|Feature|Description|
+|-|-|
+|`unix`|Use the UNIX socket instead of TCP. Only for UNIX-like OS.|

@@ -3,6 +3,7 @@ mod bulletin;
 mod server;
 use server::BBServer;
 use std::sync::LazyLock;
+use clap::Parser;
 
 #[cfg(not(feature = "unix"))]
 static LISTEN_ADDR: LazyLock<String> =
@@ -25,6 +26,14 @@ static FILE_THRETHOLD: LazyLock<u64> = LazyLock::new(|| {
 static LOG_FILE: LazyLock<String> =
     LazyLock::new(|| std::env::var("BB_LOG_FILE").unwrap_or("./bulletin-board.log".to_string()));
 
+#[derive(Parser)]
+struct Args {
+    /// Log to stdout
+    #[arg(short, long)]
+    debug: bool
+}
+
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     LazyLock::force(&LISTEN_ADDR);
     LazyLock::force(&TMP_DIR);
@@ -33,7 +42,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     LazyLock::force(&FILE_THRETHOLD);
     LazyLock::force(&LOG_FILE);
 
-    let mut server = BBServer::new()?;
+    let args = Args::parse();
+
+    let mut server = BBServer::new(args.debug)?;
     server.listen()?;
     Ok(())
 }

@@ -1,5 +1,9 @@
 Mathematica client for BulletinBoard
 ====================================
+[![Crates.io](https://img.shields.io/crates/v/bulletin-board-mathematica?style=flat-square)](https://crates.io/crates/bulletin-board-mathematica)
+[![Crates.io](https://img.shields.io/crates/d/bulletin-board-mathematica?style=flat-square)](https://crates.io/crates/bulletin-board-mathematica)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
+
 For more details, see [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard).
 
 Example
@@ -27,75 +31,28 @@ BBRead["test"]
 
 Functions
 ----------
-* BBLoadFunctions[address]
-
-Load functions of BulletinBoard client. The address is either "ADDRESS:PORT" or "SOCKETPATH". This has to be executed first.
-
-* BBPost[varName, varTag(optional), data]
-
-Post the data to the server.
-
-* BBRead[varName, varTag(optional), revisions(optional)]
-
-Read the bulletin.
-
-* BBStatus[]
-
-Show the status of the server.
-
-* BBLog[]
-
-Show the log of the server.
-
-* BBViewBoard[]
-
-List the bulletins.
-
-* BBGetInfo[varName, varTag(optional)]
-
-See the details of the bulletin.
-
-* BBClearRevisions[varName, varTag, revisions]
-
-Clear the specified revisions.
-
-* BBRemove[varName, varTag]
-
-Remove all revisions of the specified bulletin.
-
-* BBArchive[varName, varTag, archive]
-
-Save the bulletin to an archive and make the data persistent.
-
-* BBLoad[archiveName]
-
-Load the archived data. (The archive name is added to the tag)
-
-* BBListArchive[]
-
-List the archives.
-
-* BBRenameArchive[archiveFrom, archiveTo]
-
-Rename an archive.
-
-* BBDeleteArchive[archiveName]
-
-Delete an archive.
-
-* BBDump[archiveName]
-
-Save all the bulletins to an archive.
-
-* BBRestore[archiveName]
-
-Restore the archived data. (The data is restored to memory/file without modification of the tag)
-
-* BBReset[]
-
-Reset the BulletinBoard server.
+|Function|Description|
+|-|-|
+|BBLoadFunctions[address]|Load functions of BulletinBoard client. The address is either "ADDRESS:PORT" or "SOCKETPATH". This has to be executed first.|
+|BBPost[varName, varTag(optional), data]|Post the data to the server.|
+|BBRead[varName, varTag(optional), revisions(optional)]|Read the bulletin.|
+|BBStatus[]|Show the status of the server.|
+|BBLog[]|Show the log of the server.|
+|BBViewBoard[]|List the bulletins.|
+|BBGetInfo[varName, varTag(optional)]|See the details of the bulletin.|
+|BBClearRevisions[varName, varTag, revisions]|Clear the specified revisions.|
+|BBRemove[varName, varTag]|Remove all revisions of the specified bulletin.|
+|BBArchive[varName, varTag, archive]|Save the bulletin to an archive and make the data persistent.|
+|BBLoad[archiveName]|Load the archived data. (The archive name is added to the tag)|
+|BBListArchive[]|List the archives.|
+|BBRenameArchive[archiveFrom, archiveTo]|Rename an archive.|
+|BBDeleteArchive[archiveName]|Delete an archive.|
+|BBDump[archiveName]|Save all the bulletins to an archive.|
+|BBRestore[archiveName]|Restore the archived data. (The data is restored to memory/file without modification of the tag)|
+|BBReset[]|Reset the BulletinBoard server.|
 
 Crate Features
 --------------
-* `unix`
-Use the UNIX socket instead of TCP. Only for UNIX-like OS.
+|Feature|Description|
+|-|-|
+|`unix`|Use the UNIX socket instead of TCP. Only for UNIX-like OS.|

@@ -1,5 +1,7 @@
 Bulletin Board
 ===========================
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
+
 Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) for debugging and data taking purposes.
 
 `BulletinBoard` is a part of [`dbgbb`](https://github.com/YShoji-HEP/dbgbb) project.
@@ -11,6 +13,15 @@ Highlights
 * The tag can be omitted if no other tags are present.
 * If the revision is omitted, the most recent revision is returned.
 * The data does not persist by default. Use `archive` or `dump` command to make it persistent.
+* Docker container for the server is available [here](https://hub.docker.com/r/yshojihep/bulletin-board). (currently only available for arm64)
+
+Crates.io
+-----------------
+|Crate|Version|
+|-|-|
+|BulletinBoard Server|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-server?style=flat-square)](https://crates.io/crates/bulletin-board-server)|
+|Rust Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)|
+|Mathematica Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-mathematica?style=flat-square)](https://crates.io/crates/bulletin-board-mathematica)|
 
 Example
 -------

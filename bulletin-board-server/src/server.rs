@@ -15,19 +15,20 @@ use bulletin_board_common::*;
 use chrono::Local;
 use serde_bytes::ByteBuf;
 use std::fs::File;
-use std::io;
-use std::io::Write;
+use std::io::{self, Seek, SeekFrom, Write};
 
 pub struct BBServer {
     bulletinboard: BulletinBoard,
     archive_manipulations: Vec<(String, Option<String>)>,
+    log_stdout: bool,
 }
 
 impl BBServer {
-    pub fn new() -> Result<Self, std::io::Error> {
+    pub fn new(log_stdout: bool) -> Result<Self, std::io::Error> {
         Ok(Self {
             bulletinboard: BulletinBoard::new()?,
             archive_manipulations: vec![],
+            log_stdout,
         })
     }
     pub fn listen(&mut self) -> Result<(), std::io::Error> {
@@ -36,35 +37,33 @@ impl BBServer {
             std::fs::remove_file(&*LISTEN_ADDR)?;
         }
         {
-            let datetime = Local::now().to_string();
             let version = env!("CARGO_PKG_VERSION");
-            let message = format!("{datetime} Bulletin Board Server v{version} started.\n");
-            let mut log_file = File::options()
-                .write(true)
-                .create(true)
-                .truncate(false)
-                .open(&*LOG_FILE)?;
-            log_file.seek(SeekFrom::End(0))?;
-            log_file.write_all(message.as_bytes())?;
+            let message = format!("Bulletin Board Server v{version} started.");
+            self.write_log(message)?;
         }
         let listener = TcpOrUnixListener::bind(&*LISTEN_ADDR)?;
         for stream in listener.incoming() {
             let stream = stream?;
             if let Err(err) = self.process(stream) {
                 let err = Box::leak(err);
-                let datetime = Local::now().to_string();
-                let message = format!("{datetime} {err}\n");
-                eprintln!("{message}");
-
-                let mut log_file = File::options()
-                    .write(true)
-                    .create(true)
-                    .truncate(false)
-                    .open(&*LOG_FILE)?;
-                log_file.seek(SeekFrom::End(0))?;
-                log_file.write_all(message.as_bytes())?;
+                self.write_log(err.to_string())?;
             };
         }
+        Ok(())
+    }
+    fn write_log(&self, message: String) -> Result<(), std::io::Error> {
+        let datetime = Local::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+        let message = format!("{datetime} {message}\n");
+        if self.log_stdout {
+            print!("{}", message);
+        }
+        let mut log_file = File::options()
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&*LOG_FILE)?;
+        log_file.seek(SeekFrom::End(0))?;
+        log_file.write_all(message.as_bytes())?;
         Ok(())
     }
     fn process(&mut self, mut stream: TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
