@@ -9,8 +9,8 @@ fn post_integer(link: &mut wstp::Link) {
     let var_name = link.get_string().unwrap();
     let var_tag = link.get_string().unwrap();
     let val = link.get_i64().unwrap();
-    let bc = val.try_into().unwrap();
-    bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+    let obj = val.try_into().unwrap();
+    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
@@ -20,8 +20,8 @@ fn post_real(link: &mut wstp::Link) {
     let var_name = link.get_string().unwrap();
     let var_tag = link.get_string().unwrap();
     let val = link.get_f64().unwrap();
-    let bc = val.try_into().unwrap();
-    bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+    let obj = val.try_into().unwrap();
+    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
@@ -32,8 +32,8 @@ fn post_complex(link: &mut wstp::Link) {
     let var_tag = link.get_string().unwrap();
     let re = link.get_f64().unwrap();
     let im = link.get_f64().unwrap();
-    let bc = Pair(re, im).try_into().unwrap();
-    bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+    let obj = Pair(re, im).try_into().unwrap();
+    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
@@ -43,8 +43,8 @@ fn post_string(link: &mut wstp::Link) {
     let var_name = link.get_string().unwrap();
     let var_tag = link.get_string().unwrap();
     let val = link.get_string().unwrap();
-    let bc = val.try_into().unwrap();
-    bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+    let obj = val.try_into().unwrap();
+    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
@@ -57,8 +57,8 @@ fn post_integer_array(link: &mut wstp::Link) {
         let arr = link.get_i64_array().unwrap();
         let shape = arr.dimensions().into_iter().map(|&x| x as u64).collect();
         let data = arr.data().into_iter().copied().collect();
-        let bc = VecShape(data, shape).try_into().unwrap();
-        bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+        let obj = VecShape(data, shape).try_into().unwrap();
+        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -72,8 +72,8 @@ fn post_real_array(link: &mut wstp::Link) {
         let arr = link.get_f64_array().unwrap();
         let shape = arr.dimensions().into_iter().map(|&x| x as u64).collect();
         let data = arr.data().into_iter().copied().collect();
-        let bc = VecShape(data, shape).try_into().unwrap();
-        bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+        let obj = VecShape(data, shape).try_into().unwrap();
+        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -94,8 +94,8 @@ fn post_complex_array(link: &mut wstp::Link) {
             let im_arr = link.get_f64_array().unwrap();
             im_arr.data().into_iter().copied().collect()
         };
-        let bc = VecVecShape(re, im, shape).try_into().unwrap();
-        bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+        let obj = VecVecShape(re, im, shape).try_into().unwrap();
+        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -119,8 +119,8 @@ fn post_string_array(link: &mut wstp::Link) {
             .into_iter()
             .map(|&x| x.try_into().unwrap())
             .collect();
-        let bc = VecShape(data, shape).try_into().unwrap();
-        bulletin_board_client::post(var_name, var_tag, bc).unwrap();
+        let obj = VecShape(data, shape).try_into().unwrap();
+        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -179,7 +179,7 @@ fn read(link: &mut wstp::Link) {
         }
         _ => panic!(),
     };
-    let list = bulletin_board_client::read(var_name, var_tag, revisions).unwrap();
+    let list = bulletin_board_client::read(&var_name, var_tag.as_deref(), revisions).unwrap();
     if list.len() > 1 {
         link.put_function("System`List", list.len()).unwrap();
     }
@@ -293,7 +293,7 @@ fn get_info(link: &mut wstp::Link) {
         2 => (link.get_string().unwrap(), Some(link.get_string().unwrap())),
         _ => panic!(),
     };
-    let info = bulletin_board_client::get_info(var_name, var_tag).unwrap();
+    let info = bulletin_board_client::get_info(&var_name, var_tag.as_deref()).unwrap();
     link.put_function("System`List", info.len()).unwrap();
     for (revision, datasize, timestamp, backend) in info {
         link.put_function("System`List", 4).unwrap();
@@ -311,7 +311,7 @@ fn clear_revisions(link: &mut wstp::Link) {
     let var_tag = link.get_string().unwrap();
     if link.get_type().unwrap() == wstp::TokenType::Integer {
         let revision = link.get_i64().unwrap().try_into().unwrap();
-        bulletin_board_client::clear_revisions(var_name, var_tag, vec![revision]).unwrap();
+        bulletin_board_client::clear_revisions(&var_name, &var_tag, vec![revision]).unwrap();
     } else {
         let revisions = link
             .get_i64_array()
@@ -320,7 +320,7 @@ fn clear_revisions(link: &mut wstp::Link) {
             .into_iter()
             .map(|&x| x.try_into().unwrap())
             .collect();
-        bulletin_board_client::clear_revisions(var_name, var_tag, revisions).unwrap();
+        bulletin_board_client::clear_revisions(&var_name, &var_tag, revisions).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -330,25 +330,25 @@ fn remove(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 2);
     let var_name = link.get_string().unwrap();
     let var_tag = link.get_string().unwrap();
-    bulletin_board_client::remove(var_name, var_tag).unwrap();
+    bulletin_board_client::remove(&var_name, &var_tag).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn archive(link: &mut wstp::Link) {
-    assert_eq!(link.test_head("System`List").unwrap(), 2);
+    assert_eq!(link.test_head("System`List").unwrap(), 3);
     let var_name = link.get_string().unwrap();
     let var_tag = link.get_string().unwrap();
-    let name = link.get_string().unwrap();
-    bulletin_board_client::archive(var_name, var_tag, name).unwrap();
+    let acv_name = link.get_string().unwrap();
+    bulletin_board_client::archive(&var_name, &var_tag, &acv_name).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn load(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 1);
-    let name = link.get_string().unwrap();
-    bulletin_board_client::load(name).unwrap();
+    let acv_name = link.get_string().unwrap();
+    bulletin_board_client::load(&acv_name).unwrap();
     link.put_str("Sent").unwrap();
 }
 
@@ -367,31 +367,31 @@ fn rename_archive(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 2);
     let name_from = link.get_string().unwrap();
     let name_to = link.get_string().unwrap();
-    bulletin_board_client::rename_archive(name_from, name_to).unwrap();
+    bulletin_board_client::rename_archive(&name_from, &name_to).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn delete_archive(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 1);
-    let name = link.get_string().unwrap();
-    bulletin_board_client::delete_archive(name).unwrap();
+    let acv_name = link.get_string().unwrap();
+    bulletin_board_client::delete_archive(&acv_name).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn dump(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 1);
-    let name = link.get_string().unwrap();
-    bulletin_board_client::dump(name).unwrap();
+    let acv_name = link.get_string().unwrap();
+    bulletin_board_client::dump(&acv_name).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn restore(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 1);
-    let name = link.get_string().unwrap();
-    bulletin_board_client::restore(name).unwrap();
+    let acv_name = link.get_string().unwrap();
+    bulletin_board_client::restore(&acv_name).unwrap();
     link.put_str("Sent").unwrap();
 }
 

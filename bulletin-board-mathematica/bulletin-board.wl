@@ -3,23 +3,23 @@
 BeginPackage["BulletinBoardClient`"];
 
 
-BBLoadFunctions::usage = "BBLoadFunctions[address]";
-BBPost::usage = "BBPost[varName, varTag(optional), data]";
-BBRead::usage = "BBRead[varName, varTag(optional), revisions(optional)]";
-BBStatus::usage = "BBStatus[]";
-BBLog::usage = "BBLog[]";
-BBViewBoard::usage = "BBViewBoard[]";
-BBGetInfo::usage = "BBGetInfo[varName, varTag(optional)]";
-BBClearRevisions::usage = "BBClearRevisions[varName, varTag, revisions]";
-BBRemove::usage = "BBRemove[varName, varTag]";
-BBArchive::usage = "BBArchive[varName, varTag, archive]";
-BBLoad::usage = "BBLoad[archiveName]";
-BBListArchive::usage = "BBListArchive[]";
-BBRenameArchive::usage = "BBRenameArchive[archiveFrom, archiveTo]";
-BBDeleteArchive::usage = "BBDeleteArchive[archiveName]";
-BBDump::usage = "BBDump[archiveName]";
-BBRestore::usage = "BBRestore[archiveName]";
-BBReset::usage = "BBReset[]";
+BBLoadFunctions::usage = "BBLoadFunctions[address] loads functions of BulletinBoard client.";
+BBPost::usage = "BBPost[varName, varTag(optional), data] sends data to the server.";
+BBRead::usage = "BBRead[varName, varTag(optional), revisions(optional)] retrives data from the server.";
+BBStatus::usage = "BBStatus[] shows the status of the server.";
+BBLog::usage = "BBLog[] shows the log of the server.";
+BBViewBoard::usage = "BBViewBoard[] shows the list of bulletins.";
+BBGetInfo::usage = "BBGetInfo[varName, varTag(optional)] retrives the information of the bulletin.";
+BBClearRevisions::usage = "BBClearRevisions[varName, varTag, revisions] deletes specified revisions of the bulletin.";
+BBRemove::usage = "BBRemove[varName, varTag] removes a bulletin.";
+BBArchive::usage = "BBArchive[varName, varTag, archive] saves a bulletin into an archive.";
+BBLoad::usage = "BBLoad[archiveName] loads bulletins from an archive.";
+BBListArchive::usage = "BBListArchive[] shows the list of archives.";
+BBRenameArchive::usage = "BBRenameArchive[archiveFrom, archiveTo] renames an archive.";
+BBDeleteArchive::usage = "BBDeleteArchive[archiveName] deletes an archive.";
+BBDump::usage = "BBDump[archiveName] saves all the bulletins into an archive.";
+BBRestore::usage = "BBRestore[archiveName] restores bulletins from an archive.";
+BBReset::usage = "BBReset[] resets the server.";
 
 
 Begin["`Private`"];

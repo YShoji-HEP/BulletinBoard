@@ -3,6 +3,8 @@ Rust client for BulletinBoard
 [![Crates.io](https://img.shields.io/crates/v/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
 [![Crates.io](https://img.shields.io/crates/d/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
+
+`BulletinBoard` is an object strage for `ArrayObject` for debugging and data taking purposes.
 For more details, see [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard).
 
 Example
@@ -16,12 +18,13 @@ BB_ADDR = "ADDRESS:PORT"
 To post and read the bulletins, 
 ```rust
 use bulletin_board_client as bbclient;
-use array_object::*;
+use bbclient::*;
 
 fn main() {
     let data: ArrayObject = vec![1f32, 2., -3., 5.].into();
-    bbclient::post("x".to_string(), "tag".to_string(), data.clone());
-    let rcvd = bbclient::read("x".to_string());
+    bbclient::post("x", "tag", data.clone());
+
+    let rcvd = bbclient::read("x");
     let restored = rcvd.unpack().unwrap();
     assert_eq!(data, restored);
 }
@@ -32,9 +35,10 @@ To make the data persistent,
 use bulletin_board_client as bbclient;
 
 fn main() {
-    bbclient::archive("x".to_string(), "tag".to_string(), "acv".to_string());
-    bbclient::reset();
-    bbclient::load("acv".to_string());
+    bbclient::archive("x", "tag", "acv");
+    bbclient::reset(); // Delete all temporary data.
+
+    bbclient::load("acv");
     dbg!(bbclient::view_board());
 }
 ```

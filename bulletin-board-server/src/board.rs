@@ -150,27 +150,27 @@ impl BulletinBoard {
         var_tag: String,
         acv_name: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let dir = format!("{}/{}", *ACV_DIR, acv_name);
-        if !Path::new(&dir).exists() {
-            fs::create_dir_all(&dir)?;
-            std::fs::write(dir.clone() + "/version.txt", env!("CARGO_PKG_VERSION"))?;
-        }
-        let filename_data = dir.clone() + "/data.bin";
-        let filename_meta = dir + "/meta.bin";
-        let mut file_data = File::options()
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&filename_data)?;
-        let mut file_meta = File::options()
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&filename_meta)?;
-        file_data.seek(SeekFrom::End(0))?;
-        file_meta.seek(SeekFrom::End(0))?;
         match self.bulletins.remove(&(var_name.clone(), var_tag.clone())) {
             Some(mut rev_list) => {
+                let dir = format!("{}/{}", *ACV_DIR, acv_name);
+                if !Path::new(&dir).exists() {
+                    fs::create_dir_all(&dir)?;
+                    std::fs::write(dir.clone() + "/version.txt", env!("CARGO_PKG_VERSION"))?;
+                }
+                let filename_data = dir.clone() + "/data.bin";
+                let filename_meta = dir + "/meta.bin";
+                let mut file_data = File::options()
+                    .write(true)
+                    .create(true)
+                    .truncate(false)
+                    .open(&filename_data)?;
+                let mut file_meta = File::options()
+                    .write(true)
+                    .create(true)
+                    .truncate(false)
+                    .open(&filename_meta)?;
+                file_data.seek(SeekFrom::End(0))?;
+                file_meta.seek(SeekFrom::End(0))?;
                 let mut temp = vec![];
                 let mut buffer = Cursor::new(vec![]);
                 for bulletin in &mut rev_list {

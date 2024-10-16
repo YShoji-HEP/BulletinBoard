@@ -15,6 +15,12 @@ Highlights
 * The tag can be omitted if no other tags are present.
 * If the revision is omitted, the most recent revision is returned.
 * The data does not persist by default. Use `archive` or `dump` command to make it persistent.
+* Docker image of the server is available.
+
+Docker
+------
+
+The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board). (currently only available for arm64)
 
 Example
 -------

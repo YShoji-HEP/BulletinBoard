@@ -13,7 +13,7 @@ Highlights
 * The tag can be omitted if no other tags are present.
 * If the revision is omitted, the most recent revision is returned.
 * The data does not persist by default. Use `archive` or `dump` command to make it persistent.
-* Docker container for the server is available [here](https://hub.docker.com/r/yshojihep/bulletin-board). (currently only available for arm64)
+* Docker image of the server is available.
 
 Crates.io
 -----------------
@@ -23,6 +23,11 @@ Crates.io
 |Rust Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)|
 |Mathematica Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-mathematica?style=flat-square)](https://crates.io/crates/bulletin-board-mathematica)|
 
+Docker
+------
+
+The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board). (currently only available for arm64)
+ 
 Example
 -------
 Install and run the server with the specified listen address.
@@ -39,8 +44,8 @@ use array_object::*;
 
 fn main() {
     let data: ArrayObject = vec![1f32, 2., -3., 5.].into();
-    bbclient::post("x".to_string(), "tag".to_string(), data.clone());
-    let rcvd = bbclient::read("x".to_string());
+    bbclient::post("x", "tag", data.clone());
+    let rcvd = bbclient::read("x");
     let restored = rcvd.unpack().unwrap();
     assert_eq!(data, restored);
 }

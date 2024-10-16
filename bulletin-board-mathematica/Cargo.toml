@@ -1,6 +1,6 @@
 [package]
 name = "bulletin-board-mathematica"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "Apache-2.0"
 description = "Mathematica client for BulletinBoard"
@@ -10,7 +10,7 @@ keywords = ["object_storage", "database", "debugging"]
 categories = ["database", "development-tools::debugging"]
 
 [dependencies]
-bulletin-board-client = "0.1.0"
+bulletin-board-client = "0.1.1"
 wolfram-library-link = "0.2.10"
 
 [lib]
