@@ -1,5 +1,6 @@
 Rust client for BulletinBoard
 =============================
+[![Sponsors](https://img.shields.io/badge/Offer-Coffee-red)](https://github.com/sponsors/YShoji-HEP)
 [![Crates.io](https://img.shields.io/crates/v/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
 [![Crates.io](https://img.shields.io/crates/d/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
@@ -22,9 +23,9 @@ use bbclient::*;
 
 fn main() {
     let data: ArrayObject = vec![1f32, 2., -3., 5.].into();
-    bbclient::post("x", "tag", data.clone());
+    bbclient::post("x", "tag", data.clone()).unwrap();
 
-    let rcvd = bbclient::read("x");
+    let rcvd = bbclient::read("x").unwrap();
     let restored = rcvd.unpack().unwrap();
     assert_eq!(data, restored);
 }
@@ -35,11 +36,11 @@ To make the data persistent,
 use bulletin_board_client as bbclient;
 
 fn main() {
-    bbclient::archive("x", "tag", "acv");
-    bbclient::reset(); // Delete all temporary data.
+    bbclient::archive("x", "tag", "acv").unwrap();
+    bbclient::reset().unwrap(); // Delete all temporary data.
 
-    bbclient::load("acv");
-    dbg!(bbclient::view_board());
+    bbclient::load("acv").unwrap();
+    dbg!(bbclient::view_board().unwrap());
 }
 ```
 Environment Variables

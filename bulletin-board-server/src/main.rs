@@ -1,6 +1,7 @@
 mod board;
 mod bulletin;
 mod server;
+mod error;
 use server::BBServer;
 use std::sync::LazyLock;
 use clap::Parser;

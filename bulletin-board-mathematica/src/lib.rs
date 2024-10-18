@@ -6,45 +6,45 @@ generate_loader!(load_dbgbb);
 #[wll::export(wstp)]
 fn post_integer(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 3);
-    let var_name = link.get_string().unwrap();
-    let var_tag = link.get_string().unwrap();
+    let title = link.get_string().unwrap();
+    let tag = link.get_string().unwrap();
     let val = link.get_i64().unwrap();
     let obj = val.try_into().unwrap();
-    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+    bulletin_board_client::post(&title, &tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn post_real(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 3);
-    let var_name = link.get_string().unwrap();
-    let var_tag = link.get_string().unwrap();
+    let title = link.get_string().unwrap();
+    let tag = link.get_string().unwrap();
     let val = link.get_f64().unwrap();
     let obj = val.try_into().unwrap();
-    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+    bulletin_board_client::post(&title, &tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn post_complex(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 4);
-    let var_name = link.get_string().unwrap();
-    let var_tag = link.get_string().unwrap();
+    let title = link.get_string().unwrap();
+    let tag = link.get_string().unwrap();
     let re = link.get_f64().unwrap();
     let im = link.get_f64().unwrap();
     let obj = Pair(re, im).try_into().unwrap();
-    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+    bulletin_board_client::post(&title, &tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn post_string(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 3);
-    let var_name = link.get_string().unwrap();
-    let var_tag = link.get_string().unwrap();
+    let title = link.get_string().unwrap();
+    let tag = link.get_string().unwrap();
     let val = link.get_string().unwrap();
     let obj = val.try_into().unwrap();
-    bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+    bulletin_board_client::post(&title, &tag, obj).unwrap();
     link.put_str("Sent").unwrap();
 }
 
@@ -52,13 +52,13 @@ fn post_string(link: &mut wstp::Link) {
 fn post_integer_array(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 3);
     {
-        let var_name = link.get_string().unwrap();
-        let var_tag = link.get_string().unwrap();
+        let title = link.get_string().unwrap();
+        let tag = link.get_string().unwrap();
         let arr = link.get_i64_array().unwrap();
         let shape = arr.dimensions().into_iter().map(|&x| x as u64).collect();
         let data = arr.data().into_iter().copied().collect();
         let obj = VecShape(data, shape).try_into().unwrap();
-        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+        bulletin_board_client::post(&title, &tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -67,13 +67,13 @@ fn post_integer_array(link: &mut wstp::Link) {
 fn post_real_array(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 3);
     {
-        let var_name = link.get_string().unwrap();
-        let var_tag = link.get_string().unwrap();
+        let title = link.get_string().unwrap();
+        let tag = link.get_string().unwrap();
         let arr = link.get_f64_array().unwrap();
         let shape = arr.dimensions().into_iter().map(|&x| x as u64).collect();
         let data = arr.data().into_iter().copied().collect();
         let obj = VecShape(data, shape).try_into().unwrap();
-        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+        bulletin_board_client::post(&title, &tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -82,8 +82,8 @@ fn post_real_array(link: &mut wstp::Link) {
 fn post_complex_array(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 4);
     {
-        let var_name = link.get_string().unwrap();
-        let var_tag = link.get_string().unwrap();
+        let title = link.get_string().unwrap();
+        let tag = link.get_string().unwrap();
         let (re, shape) = {
             let re_arr = link.get_f64_array().unwrap();
             let re = re_arr.data().into_iter().copied().collect();
@@ -95,7 +95,7 @@ fn post_complex_array(link: &mut wstp::Link) {
             im_arr.data().into_iter().copied().collect()
         };
         let obj = VecVecShape(re, im, shape).try_into().unwrap();
-        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+        bulletin_board_client::post(&title, &tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -104,8 +104,8 @@ fn post_complex_array(link: &mut wstp::Link) {
 fn post_string_array(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 4);
     {
-        let var_name = link.get_string().unwrap();
-        let var_tag = link.get_string().unwrap();
+        let title = link.get_string().unwrap();
+        let tag = link.get_string().unwrap();
         let len = link.test_head("System`List").unwrap();
         let mut data = vec![];
         for _ in 0..len {
@@ -120,7 +120,7 @@ fn post_string_array(link: &mut wstp::Link) {
             .map(|&x| x.try_into().unwrap())
             .collect();
         let obj = VecShape(data, shape).try_into().unwrap();
-        bulletin_board_client::post(&var_name, &var_tag, obj).unwrap();
+        bulletin_board_client::post(&title, &tag, obj).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -128,22 +128,22 @@ fn post_string_array(link: &mut wstp::Link) {
 #[wll::export(wstp)]
 fn read(link: &mut wstp::Link) {
     let argc = link.test_head("System`List").unwrap();
-    let (var_name, var_tag, revisions) = match argc {
+    let (title, tag, revisions) = match argc {
         1 => (link.get_string().unwrap(), None, vec![]),
         2 => {
-            let var_name = link.get_string().unwrap();
+            let title = link.get_string().unwrap();
             if link.get_type().unwrap() == wstp::TokenType::String {
-                (var_name, Some(link.get_string().unwrap()), vec![])
+                (title, Some(link.get_string().unwrap()), vec![])
             } else {
                 if link.get_type().unwrap() == wstp::TokenType::Integer {
                     (
-                        var_name,
+                        title,
                         None,
                         vec![link.get_i64().unwrap().try_into().unwrap()],
                     )
                 } else {
                     (
-                        var_name,
+                        title,
                         None,
                         link.get_i64_array()
                             .unwrap()
@@ -156,18 +156,18 @@ fn read(link: &mut wstp::Link) {
             }
         }
         3 => {
-            let var_name = link.get_string().unwrap();
-            let var_tag = Some(link.get_string().unwrap());
+            let title = link.get_string().unwrap();
+            let tag = Some(link.get_string().unwrap());
             if link.get_type().unwrap() == wstp::TokenType::Integer {
                 (
-                    var_name,
-                    var_tag,
+                    title,
+                    tag,
                     vec![link.get_i64().unwrap().try_into().unwrap()],
                 )
             } else {
                 (
-                    var_name,
-                    var_tag,
+                    title,
+                    tag,
                     link.get_i64_array()
                         .unwrap()
                         .data()
@@ -179,7 +179,7 @@ fn read(link: &mut wstp::Link) {
         }
         _ => panic!(),
     };
-    let list = bulletin_board_client::read(&var_name, var_tag.as_deref(), revisions).unwrap();
+    let list = bulletin_board_client::read(&title, tag.as_deref(), revisions).unwrap();
     if list.len() > 1 {
         link.put_function("System`List", list.len()).unwrap();
     }
@@ -277,10 +277,10 @@ fn view_board(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 0);
     let board = bulletin_board_client::view_board().unwrap();
     link.put_function("System`List", board.len()).unwrap();
-    for (var_name, var_tag, revisions) in board {
+    for (title, tag, revisions) in board {
         link.put_function("System`List", 3).unwrap();
-        link.put_str(&var_name).unwrap();
-        link.put_str(&var_tag).unwrap();
+        link.put_str(&title).unwrap();
+        link.put_str(&tag).unwrap();
         link.put_i64(revisions.try_into().unwrap()).unwrap();
     }
 }
@@ -288,12 +288,12 @@ fn view_board(link: &mut wstp::Link) {
 #[wll::export(wstp)]
 fn get_info(link: &mut wstp::Link) {
     let argc = link.test_head("System`List").unwrap();
-    let (var_name, var_tag) = match argc {
+    let (title, tag) = match argc {
         1 => (link.get_string().unwrap(), None),
         2 => (link.get_string().unwrap(), Some(link.get_string().unwrap())),
         _ => panic!(),
     };
-    let info = bulletin_board_client::get_info(&var_name, var_tag.as_deref()).unwrap();
+    let info = bulletin_board_client::get_info(&title, tag.as_deref()).unwrap();
     link.put_function("System`List", info.len()).unwrap();
     for (revision, datasize, timestamp, backend) in info {
         link.put_function("System`List", 4).unwrap();
@@ -307,11 +307,11 @@ fn get_info(link: &mut wstp::Link) {
 #[wll::export(wstp)]
 fn clear_revisions(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 3);
-    let var_name = link.get_string().unwrap();
-    let var_tag = link.get_string().unwrap();
+    let title = link.get_string().unwrap();
+    let tag = link.get_string().unwrap();
     if link.get_type().unwrap() == wstp::TokenType::Integer {
         let revision = link.get_i64().unwrap().try_into().unwrap();
-        bulletin_board_client::clear_revisions(&var_name, &var_tag, vec![revision]).unwrap();
+        bulletin_board_client::clear_revisions(&title, &tag, vec![revision]).unwrap();
     } else {
         let revisions = link
             .get_i64_array()
@@ -320,7 +320,7 @@ fn clear_revisions(link: &mut wstp::Link) {
             .into_iter()
             .map(|&x| x.try_into().unwrap())
             .collect();
-        bulletin_board_client::clear_revisions(&var_name, &var_tag, revisions).unwrap();
+        bulletin_board_client::clear_revisions(&title, &tag, revisions).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
@@ -328,19 +328,19 @@ fn clear_revisions(link: &mut wstp::Link) {
 #[wll::export(wstp)]
 fn remove(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 2);
-    let var_name = link.get_string().unwrap();
-    let var_tag = link.get_string().unwrap();
-    bulletin_board_client::remove(&var_name, &var_tag).unwrap();
+    let title = link.get_string().unwrap();
+    let tag = link.get_string().unwrap();
+    bulletin_board_client::remove(&title, &tag).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn archive(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 3);
-    let var_name = link.get_string().unwrap();
-    let var_tag = link.get_string().unwrap();
+    let title = link.get_string().unwrap();
+    let tag = link.get_string().unwrap();
     let acv_name = link.get_string().unwrap();
-    bulletin_board_client::archive(&var_name, &var_tag, &acv_name).unwrap();
+    bulletin_board_client::archive(&title, &tag, &acv_name).unwrap();
     link.put_str("Sent").unwrap();
 }
 

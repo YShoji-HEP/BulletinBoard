@@ -6,7 +6,7 @@ license = "Apache-2.0"
 description = "Mathematica client for BulletinBoard"
 repository = "https://github.com/YShoji-HEP/BulletinBoard"
 readme = "README.md"
-keywords = ["object_storage", "database", "debugging"]
+keywords = ["object_storage", "database", "debugging", "mathematica", "client"]
 categories = ["database", "development-tools::debugging"]
 
 [dependencies]

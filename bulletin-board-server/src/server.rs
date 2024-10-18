@@ -10,6 +10,7 @@ use std::os::unix::net::UnixStream as TcpOrUnixStream;
 
 use crate::board::BulletinBoard;
 use crate::bulletin::Bulletin;
+use crate::error::{ArchiveError, BulletinError};
 use crate::{LISTEN_ADDR, LOG_FILE};
 use bulletin_board_common::*;
 use chrono::Local;
@@ -20,15 +21,15 @@ use std::io::{self, Seek, SeekFrom, Write};
 pub struct BBServer {
     bulletinboard: BulletinBoard,
     archive_manipulations: Vec<(String, Option<String>)>,
-    log_stdout: bool,
+    debug: bool,
 }
 
 impl BBServer {
-    pub fn new(log_stdout: bool) -> Result<Self, std::io::Error> {
+    pub fn new(debug: bool) -> Result<Self, std::io::Error> {
         Ok(Self {
             bulletinboard: BulletinBoard::new()?,
             archive_manipulations: vec![],
-            log_stdout,
+            debug,
         })
     }
     pub fn listen(&mut self) -> Result<(), std::io::Error> {
@@ -54,7 +55,7 @@ impl BBServer {
     fn write_log(&self, message: String) -> Result<(), std::io::Error> {
         let datetime = Local::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
         let message = format!("{datetime} {message}\n");
-        if self.log_stdout {
+        if self.debug {
             print!("{}", message);
         }
         let mut log_file = File::options()
@@ -121,50 +122,59 @@ impl BBServer {
         }
         Ok(())
     }
-    fn post(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag, data): (String, String, ByteBuf) =
-            ciborium::from_reader(&mut *stream)?;
-        let bulletin = Bulletin::from_data(data.to_vec());
-        self.bulletinboard.post(var_name, var_tag, bulletin)?;
-        Ok(())
-    }
     fn get_tag(
         &self,
-        var_name: &String,
-        var_tag: Option<String>,
+        operation: &str,
+        title: &String,
+        tag: Option<String>,
         stream: &mut TcpOrUnixStream,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        match var_tag {
+        match tag {
             Some(tag) => Ok(tag),
             None => {
-                let tags = self.bulletinboard.find_tags(var_name);
+                let tags = self.bulletinboard.find_tags(title);
                 match tags.len() {
                     0 => {
                         ciborium::into_writer(&Response::NotFound, stream)?;
-                        Err(Box::new(std::io::Error::new(
-                            std::io::ErrorKind::NotFound,
-                            "Not found.",
+                        Err(Box::new(BulletinError::new(
+                            operation,
+                            "Not found.".to_string(),
+                            title.clone(),
+                            "NA".to_string(),
+                            None,
                         )))
                     }
                     1 => Ok(tags[0].clone()),
                     _ => {
                         ciborium::into_writer(&Response::NotUnique(tags.clone()), stream)?;
-                        Err(Box::new(std::io::Error::new(
-                            std::io::ErrorKind::Other,
-                            "Found multiple entries having the same name.",
+                        Err(Box::new(BulletinError::new(
+                            operation,
+                            "Found multiple entries having the same name.".to_string(),
+                            title.clone(),
+                            "NA".to_string(),
+                            None,
                         )))
                     }
                 }
             }
         }
     }
-    fn read(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag, revisions): (String, Option<String>, Vec<u64>) =
+    fn post(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+        let (title, tag, data): (String, String, ByteBuf) =
             ciborium::from_reader(&mut *stream)?;
-        let var_tag = self.get_tag(&var_name, var_tag, &mut *stream)?;
+        let bulletin = Bulletin::from_data(data.to_vec());
+        self.bulletinboard
+            .post(title.clone(), tag.clone(), bulletin)
+            .map_err(|err| BulletinError::new("post", err.to_string(), title, tag, None))?;
+        Ok(())
+    }
+    fn read(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+        let (title, tag, revisions): (String, Option<String>, Vec<u64>) =
+            ciborium::from_reader(&mut *stream)?;
+        let tag = self.get_tag("read", &title, tag, &mut *stream)?;
         let mut buf = Cursor::new(vec![]);
 
-        if let Some(bulletins) = self.bulletinboard.take(var_name, var_tag) {
+        if let Some(bulletins) = self.bulletinboard.take(title.clone(), tag.clone()) {
             if revisions.is_empty() {
                 if let Some(bulletin) = bulletins.last_mut() {
                     ciborium::into_writer(&Response::Ok, &mut buf)?;
@@ -173,9 +183,12 @@ impl BBServer {
                     bulletin.close();
                 } else {
                     ciborium::into_writer(&Response::NotFound, stream)?;
-                    return Err(Box::new(std::io::Error::new(
-                        std::io::ErrorKind::NotFound,
-                        "Not found.",
+                    return Err(Box::new(BulletinError::new(
+                        "read",
+                        "Not found.".to_string(),
+                        title,
+                        tag,
+                        None,
                     )));
                 }
             } else {
@@ -188,18 +201,24 @@ impl BBServer {
                         bulletin.close();
                     } else {
                         ciborium::into_writer(&Response::NotFound, stream)?;
-                        return Err(Box::new(std::io::Error::new(
-                            std::io::ErrorKind::NotFound,
-                            "Not found.",
+                        return Err(Box::new(BulletinError::new(
+                            "read",
+                            "Not found.".to_string(),
+                            title,
+                            tag,
+                            None,
                         )));
                     }
                 }
             }
         } else {
             ciborium::into_writer(&Response::NotFound, stream)?;
-            return Err(Box::new(std::io::Error::new(
-                std::io::ErrorKind::NotFound,
-                "Not found.",
+            return Err(Box::new(BulletinError::new(
+                "read",
+                "Not found.".to_string(),
+                title,
+                tag,
+                None,
             )));
         };
         buf.set_position(0);
@@ -223,9 +242,12 @@ impl BBServer {
         Ok(())
     }
     fn get_info(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag): (String, Option<String>) = ciborium::from_reader(&mut *stream)?;
-        let var_tag = self.get_tag(&var_name, var_tag, &mut *stream)?;
-        match self.bulletinboard.get_info(var_name, var_tag) {
+        let (title, tag): (String, Option<String>) = ciborium::from_reader(&mut *stream)?;
+        let tag = self.get_tag("get_info", &title, tag, &mut *stream)?;
+        match self
+            .bulletinboard
+            .get_info(title.clone(), tag.clone())
+        {
             Some(info) => {
                 let mut buf = Cursor::new(vec![]);
                 ciborium::into_writer(&Response::Ok, &mut buf)?;
@@ -235,9 +257,12 @@ impl BBServer {
             }
             None => {
                 ciborium::into_writer(&Response::NotFound, stream)?;
-                return Err(Box::new(std::io::Error::new(
-                    std::io::ErrorKind::NotFound,
-                    "Not found.",
+                return Err(Box::new(BulletinError::new(
+                    "get_info",
+                    "Not found.".to_string(),
+                    title,
+                    tag,
+                    None,
                 )));
             }
         }
@@ -247,26 +272,57 @@ impl BBServer {
         &mut self,
         stream: &mut TcpOrUnixStream,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag, revisions): (String, String, Vec<u64>) =
+        let (title, tag, revisions): (String, String, Vec<u64>) =
             ciborium::from_reader(stream)?;
         self.bulletinboard
-            .clear_revisions(var_name, var_tag, revisions)?;
+            .clear_revisions(title.clone(), tag.clone(), revisions)
+            .map_err(|err| {
+                Box::new(BulletinError::new(
+                    "clear_revisions",
+                    err.to_string(),
+                    title,
+                    tag,
+                    None,
+                ))
+            })?;
         Ok(())
     }
     fn remove(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag): (String, String) = ciborium::from_reader(stream)?;
-        self.bulletinboard.remove(var_name, var_tag)?;
+        let (title, tag): (String, String) = ciborium::from_reader(stream)?;
+        self.bulletinboard
+            .remove(title.clone(), tag.clone())
+            .map_err(|err| {
+                Box::new(BulletinError::new(
+                    "remove",
+                    err.to_string(),
+                    title,
+                    tag,
+                    None,
+                ))
+            })?;
         Ok(())
     }
     fn archive(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (var_name, var_tag, acv_name): (String, String, String) =
+        let (title, tag, acv_name): (String, String, String) =
             ciborium::from_reader(stream)?;
-        self.bulletinboard.archive(var_name, var_tag, acv_name)?;
+        self.bulletinboard
+            .archive(title.clone(), tag.clone(), acv_name)
+            .map_err(|err| {
+                Box::new(BulletinError::new(
+                    "archive",
+                    err.to_string(),
+                    title,
+                    tag,
+                    None,
+                ))
+            })?;
         Ok(())
     }
     fn load(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
         let acv_name: String = ciborium::from_reader(stream)?;
-        self.bulletinboard.load(acv_name)?;
+        self.bulletinboard
+            .load(acv_name.clone())
+            .map_err(|err| ArchiveError::new("load", err.to_string(), acv_name))?;
         Ok(())
     }
     fn list_archive(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
@@ -304,7 +360,9 @@ impl BBServer {
     }
     fn restore(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
         let acv_name: String = ciborium::from_reader(stream)?;
-        self.bulletinboard.restore(acv_name)?;
+        self.bulletinboard
+            .restore(acv_name.clone())
+            .map_err(|err| ArchiveError::new("restore", err.to_string(), acv_name))?;
         Ok(())
     }
     fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {

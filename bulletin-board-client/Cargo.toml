@@ -6,7 +6,7 @@ license = "Apache-2.0"
 description = "Rust client for BulletinBoard"
 repository = "https://github.com/YShoji-HEP/BulletinBoard"
 readme = "README.md"
-keywords = ["object_storage", "database", "debugging"]
+keywords = ["object_storage", "database", "debugging", "client"]
 categories = ["database-implementations", "development-tools::debugging"]
 
 [dependencies]

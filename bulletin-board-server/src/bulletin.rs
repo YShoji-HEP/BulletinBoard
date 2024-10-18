@@ -5,58 +5,6 @@ use std::io::{self, Cursor, Read, Seek, Write};
 use std::path::Path;
 use uuid::Uuid;
 
-#[cfg(test)]
-mod tests {
-    // use array_object::ArrayObject;
-
-    use super::*;
-    // #[test]
-    // fn uuid() {
-    //     let mut uuid = Uuid::new_v4().to_string();
-    //     dbg!(&uuid);
-    //     let first: String = uuid.drain(..2).collect();
-    //     let second: String = uuid.drain(..2).collect();
-    //     dbg!(first, second, uuid);
-    // }
-
-    // #[test]
-    // fn it_works() {
-    //     use array_object::Pack;
-    //     let obj: ArrayObject = vec![0.1f64, 3., 2.].into();
-    //     let mut bulletin = Bulletin::from_data(obj.pack()).unwrap();
-    //     bulletin.save_to_file().unwrap();
-    // }
-    #[test]
-    fn datastruct() {
-        let mut data = Cursor::new(vec![]);
-        dbg!(data.position());
-        let a = vec![0f64, 2., 4., 2.];
-        ciborium::into_writer(&a, &mut data).unwrap();
-        dbg!(data.position());
-        let b = vec![-1f64, 0., 3.];
-        ciborium::into_writer(&b, &mut data).unwrap();
-        dbg!(data.position());
-        let b = vec![-1f64, 0.];
-        ciborium::into_writer(&b, &mut data).unwrap();
-        dbg!(data.position());
-        data.set_position(13);
-        let test: Vec<f64> = ciborium::from_reader(&mut data).unwrap();
-        dbg!(test);
-        // let test:Vec<f64> = ciborium::from_reader(&mut data).unwrap();
-        // dbg!(test);
-    }
-
-    #[test]
-    fn dir() {
-        dbg!(fs_extra::dir::get_dir_content("/home/vscode/.ssh")
-            .unwrap()
-            .files
-            .iter()
-            .filter(|x| x.contains("id"))
-            .collect::<Vec<_>>());
-    }
-}
-
 pub struct Bulletin {
     pub data: BulletinBackend,
     pub datasize: u64,
@@ -192,7 +140,7 @@ impl Bulletin {
             }
             BulletinBackend::Archive(_) => Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
-                "Archive entry cannot be deleted.",
+                "Archived entry cannot be deleted.",
             )),
             BulletinBackend::Empty => Ok((0, 0, 0)),
         }

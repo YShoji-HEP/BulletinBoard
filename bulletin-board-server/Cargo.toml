@@ -6,7 +6,7 @@ license = "Apache-2.0"
 description = "Object storage for ArrayObject for debugging and data taking purposes."
 repository = "https://github.com/YShoji-HEP/BulletinBoard"
 readme = "README.md"
-keywords = ["object_storage", "database", "debugging"]
+keywords = ["object_storage", "database", "debugging", "server"]
 categories = ["database-implementations", "development-tools::debugging"]
 
 [dependencies]

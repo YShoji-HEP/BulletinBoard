@@ -4,15 +4,15 @@ BeginPackage["BulletinBoardClient`"];
 
 
 BBLoadFunctions::usage = "BBLoadFunctions[address] loads functions of BulletinBoard client.";
-BBPost::usage = "BBPost[varName, varTag(optional), data] sends data to the server.";
-BBRead::usage = "BBRead[varName, varTag(optional), revisions(optional)] retrives data from the server.";
+BBPost::usage = "BBPost[title, tag(optional), data] sends data to the server.";
+BBRead::usage = "BBRead[title, tag(optional), revisions(optional)] retrives data from the server.";
 BBStatus::usage = "BBStatus[] shows the status of the server.";
 BBLog::usage = "BBLog[] shows the log of the server.";
 BBViewBoard::usage = "BBViewBoard[] shows the list of bulletins.";
-BBGetInfo::usage = "BBGetInfo[varName, varTag(optional)] retrives the information of the bulletin.";
-BBClearRevisions::usage = "BBClearRevisions[varName, varTag, revisions] deletes specified revisions of the bulletin.";
-BBRemove::usage = "BBRemove[varName, varTag] removes a bulletin.";
-BBArchive::usage = "BBArchive[varName, varTag, archive] saves a bulletin into an archive.";
+BBGetInfo::usage = "BBGetInfo[title, tag(optional)] retrives the information of the bulletin.";
+BBClearRevisions::usage = "BBClearRevisions[title, tag, revisions] deletes specified revisions of the bulletin.";
+BBRemove::usage = "BBRemove[title, tag] removes a bulletin.";
+BBArchive::usage = "BBArchive[title, tag, archive] saves a bulletin into an archive.";
 BBLoad::usage = "BBLoad[archiveName] loads bulletins from an archive.";
 BBListArchive::usage = "BBListArchive[] shows the list of archives.";
 BBRenameArchive::usage = "BBRenameArchive[archiveFrom, archiveTo] renames an archive.";
@@ -59,7 +59,7 @@ BBLoadFunctions[address_]:=Module[{lib,loader},
 
 
 BBViewBoard[]:=Enclose[Module[{result=Confirm[BBViewBoardRaw[]]},
-<|"varName"->#[[1]],"varTag"->#[[2]],"revisions"->#[[3]]|>&/@result]]
+<|"title"->#[[1]],"tag"->#[[2]],"revisions"->#[[3]]|>&/@result]]
 
 
 BBGetInfo[input__]:=Enclose[Module[{result=Confirm[BBGetInfoRaw[input]]},
@@ -70,23 +70,23 @@ BBStatus[]:=Enclose[Module[{result=Confirm[BBStatusRaw[]]},
 <|"datasize"->result[[1]],"memory_used"->result[[2]],"memory_used(%)"->result[[3]],"bulletins"->result[[4]],"files"->result[[5]],"archived"->result[[6]]|>]]
 
 
-BBPost[varName_,varTag_,data_]:=Enclose[Switch[Head[data],
-	Integer,BBPostInteger[varName,varTag,data],
-	Real,BBPostReal[varName,varTag,data],
-	Complex,BBPostComplex[varName,varTag,Re[data],Im[data]],
-	String,BBPostString[varName,varTag,data],
+BBPost[title_,tag_,data_]:=Enclose[Switch[Head[data],
+	Integer,BBPostInteger[title,tag,data],
+	Real,BBPostReal[title,tag,data],
+	Complex,BBPostComplex[title,tag,Re[data],Im[data]],
+	String,BBPostString[title,tag,data],
 	List,ConfirmAssert[ArrayQ[data]&&Length[DeleteDuplicates[Head/@Flatten[data]]]==1];Switch[Head[Flatten[data][[1]]],
-		Integer,BBPostIntegerArray[varName,varTag,data],
-		Real,BBPostRealArray[varName,varTag,data],
-		Complex,BBPostComplexArray[varName,varTag,Re[data],Im[data]],
-		String,BBPostStringArray[varName,varTag,Flatten[data],Dimensions[data]],
+		Integer,BBPostIntegerArray[title,tag,data],
+		Real,BBPostRealArray[title,tag,data],
+		Complex,BBPostComplexArray[title,tag,Re[data],Im[data]],
+		String,BBPostStringArray[title,tag,Flatten[data],Dimensions[data]],
 		_,Throw["Wrong datatype."]
 	],
 	_,Throw["Wrong datatype."]
 ]]
 
 
-BBPost[varName_,data_]:=BBPost[varName,"Mathematica",data]
+BBPost[title_,data_]:=BBPost[title,"Mathematica",data]
 
 
 End[];

@@ -32,11 +32,11 @@ impl BulletinBoard {
     }
     pub fn post(
         &mut self,
-        var_name: String,
-        var_tag: String,
+        title: String,
+        tag: String,
         mut bulletin: Bulletin,
     ) -> Result<(), std::io::Error> {
-        let key = (var_name, var_tag);
+        let key = (title, tag);
         if bulletin.datasize < *FILE_THRETHOLD
             && self.memory_used + bulletin.datasize < *TOT_MEM_LIMIT
         {
@@ -51,13 +51,13 @@ impl BulletinBoard {
         entry.push(bulletin);
         Ok(())
     }
-    pub fn take(&mut self, var_name: String, var_tag: String) -> Option<&mut Vec<Bulletin>> {
-        self.bulletins.get_mut(&(var_name, var_tag))
+    pub fn take(&mut self, title: String, tag: String) -> Option<&mut Vec<Bulletin>> {
+        self.bulletins.get_mut(&(title, tag))
     }
-    pub fn find_tags(&self, var_name: &String) -> Vec<String> {
+    pub fn find_tags(&self, title: &String) -> Vec<String> {
         self.bulletins
             .keys()
-            .filter(|key| key.0 == *var_name)
+            .filter(|key| key.0 == *title)
             .map(|key| key.1.clone())
             .collect()
     }
@@ -74,17 +74,17 @@ impl BulletinBoard {
     pub fn view(&self) -> Vec<(String, String, u64)> {
         self.bulletins
             .iter()
-            .map(|((var_name, var_tag), v)| (var_name.clone(), var_tag.clone(), v.len() as u64))
+            .map(|((title, tag), v)| (title.clone(), tag.clone(), v.len() as u64))
             .collect()
     }
     pub fn get_info(
         &self,
-        var_name: String,
-        var_tag: String,
+        title: String,
+        tag: String,
     ) -> Option<Vec<(u64, u64, String, String)>> {
         Some(
             self.bulletins
-                .get(&(var_name, var_tag))?
+                .get(&(title, tag))?
                 .iter()
                 .enumerate()
                 .map(|(i, val)| {
@@ -100,13 +100,13 @@ impl BulletinBoard {
     }
     pub fn clear_revisions(
         &mut self,
-        var_name: String,
-        var_tag: String,
+        title: String,
+        tag: String,
         revisions: Vec<u64>,
     ) -> Result<(), std::io::Error> {
         let list = self
             .bulletins
-            .get_mut(&(var_name, var_tag))
+            .get_mut(&(title, tag))
             .ok_or(std::io::Error::new(
                 std::io::ErrorKind::NotFound,
                 "Not found.",
@@ -126,8 +126,8 @@ impl BulletinBoard {
         }
         Ok(())
     }
-    pub fn remove(&mut self, var_name: String, var_tag: String) -> Result<(), std::io::Error> {
-        match self.bulletins.remove(&(var_name, var_tag)) {
+    pub fn remove(&mut self, title: String, tag: String) -> Result<(), std::io::Error> {
+        match self.bulletins.remove(&(title, tag)) {
             Some(mut bulletins) => {
                 for bulletin in &mut bulletins {
                     let (datasize, mem_size, n_file) = bulletin.clear()?;
@@ -146,11 +146,11 @@ impl BulletinBoard {
     }
     pub fn archive(
         &mut self,
-        var_name: String,
-        var_tag: String,
+        title: String,
+        tag: String,
         acv_name: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        match self.bulletins.remove(&(var_name.clone(), var_tag.clone())) {
+        match self.bulletins.remove(&(title.clone(), tag.clone())) {
             Some(mut rev_list) => {
                 let dir = format!("{}/{}", *ACV_DIR, acv_name);
                 if !Path::new(&dir).exists() {
@@ -203,12 +203,12 @@ impl BulletinBoard {
                 }
                 if !temp.is_empty() {
                     ciborium::into_writer(
-                        &(var_name.clone(), var_tag.clone(), temp.len() as u64),
+                        &(title.clone(), tag.clone(), temp.len() as u64),
                         &mut file_meta,
                     )?;
                     buffer.set_position(0);
                     io::copy(&mut buffer, &mut file_meta)?;
-                    let key = (var_name.clone(), format!("{acv_name}:{var_tag}"));
+                    let key = (title.clone(), format!("{acv_name}:{tag}"));
                     let entry = self.bulletins.entry(key).or_default();
                     for bulletin in temp {
                         entry.push(bulletin);
@@ -225,10 +225,10 @@ impl BulletinBoard {
     pub fn load(&mut self, acv_name: String) -> Result<(), std::io::Error> {
         let filename_meta = format!("{}/{}/meta.bin", *ACV_DIR, acv_name);
         let mut file_meta = File::open(&filename_meta)?;
-        while let Ok((var_name, var_tag, revisions)) =
+        while let Ok((title, tag, revisions)) =
             ciborium::from_reader::<(_, String, u64), _>(&mut file_meta)
         {
-            let key = (var_name, format!("{acv_name}:{var_tag}"));
+            let key = (title, format!("{acv_name}:{tag}"));
             let entry = self.bulletins.entry(key).or_default();
             for _ in 0..revisions {
                 if let Ok((offset, datasize, timestamp)) = ciborium::from_reader(&mut file_meta) {
@@ -275,8 +275,8 @@ impl BulletinBoard {
     }
     pub fn dump(&mut self, acv_name: String) -> Result<(), Box<dyn std::error::Error>> {
         let keys: Vec<_> = self.bulletins.keys().cloned().collect();
-        for (var_name, var_tag) in keys {
-            self.archive(var_name.clone(), var_tag.clone(), acv_name.clone())?;
+        for (title, tag) in keys {
+            self.archive(title.clone(), tag.clone(), acv_name.clone())?;
         }
         Ok(())
     }
@@ -285,7 +285,7 @@ impl BulletinBoard {
         let filename_meta = format!("{}/{}/meta.bin", *ACV_DIR, acv_name);
         let file_data = File::open(&filename_data)?;
         let mut file_meta = File::open(&filename_meta)?;
-        while let Ok((var_name, var_tag, revisions)) =
+        while let Ok((title, tag, revisions)) =
             ciborium::from_reader::<(String, String, u64), _>(&mut file_meta)
         {
             for _ in 0..revisions {
@@ -296,7 +296,7 @@ impl BulletinBoard {
                     file_data.read_exact_at(&mut buf, offset).unwrap();
                     let mut bulletin = Bulletin::from_data(buf);
                     bulletin.timestamp = DateTime::from_timestamp_nanos(timestamp).into();
-                    self.post(var_name.clone(), var_tag.clone(), bulletin)?;
+                    self.post(title.clone(), tag.clone(), bulletin)?;
                 } else {
                     panic!();
                 }

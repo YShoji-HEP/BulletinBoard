@@ -9,9 +9,9 @@
 //!
 //! fn main() {
 //!     let data: ArrayObject = vec![1f32, 2., -3., 5.].into();
-//!     bbclient::post("x", "tag", data.clone());
-//! 
-//!     let rcvd = bbclient::read("x");
+//!     bbclient::post("x", "tag", data.clone()).unwrap();
+//!
+//!     let rcvd = bbclient::read("x").unwrap();
 //!     let restored = rcvd.unpack().unwrap();
 //!     assert_eq!(data, restored);
 //! }
@@ -22,11 +22,11 @@
 //! use bulletin_board_client as bbclient;
 //!
 //! fn main() {
-//!     bbclient::archive("x", "tag", "acv");
-//!     bbclient::reset(); // Delete all temporary data.
-//! 
-//!     bbclient::load("acv");
-//!     dbg!(bbclient::view_board());
+//!     bbclient::archive("x", "tag", "acv").unwrap();
+//!     bbclient::reset().unwrap(); // Delete all temporary data.
+//!
+//!     bbclient::load("acv").unwrap();
+//!     dbg!(bbclient::view_board().unwrap());
 //! }
 //! ```
 //!
@@ -53,8 +53,8 @@ static ADDR: LazyLock<String> = LazyLock::new(|| {
 
 /// Post an ArrayObject.
 pub fn post(
-    var_name: &str,
-    var_tag: &str,
+    title: &str,
+    tag: &str,
     obj: ArrayObject,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let val = serde_bytes::ByteBuf::from(obj.pack());
@@ -62,7 +62,26 @@ pub fn post(
     let mut buffer = Cursor::new(vec![]);
     ciborium::into_writer(&Operation::Post, &mut buffer)?;
     ciborium::into_writer(
-        &(var_name.to_string(), var_tag.to_string(), val),
+        &(title.to_string(), tag.to_string(), val),
+        &mut buffer,
+    )?;
+    buffer.set_position(0);
+    io::copy(&mut buffer, &mut stream)?;
+    Ok(())
+}
+
+/// Post an ArrayObject without compression.
+pub fn post_as_it_is(
+    title: &str,
+    tag: &str,
+    obj: ArrayObject,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let val = serde_bytes::ByteBuf::from(obj.pack_as_it_is());
+    let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
+    let mut buffer = Cursor::new(vec![]);
+    ciborium::into_writer(&Operation::Post, &mut buffer)?;
+    ciborium::into_writer(
+        &(title.to_string(), tag.to_string(), val),
         &mut buffer,
     )?;
     buffer.set_position(0);
@@ -72,8 +91,8 @@ pub fn post(
 
 /// Read ArrayObjects. When revisions is empty, the latest revision is returned.
 pub fn read(
-    var_name: &str,
-    var_tag: Option<&str>,
+    title: &str,
+    tag: Option<&str>,
     revisions: Vec<u64>,
 ) -> Result<Vec<ArrayObject>, Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
@@ -82,8 +101,8 @@ pub fn read(
     ciborium::into_writer(&Operation::Read, &mut buffer)?;
     ciborium::into_writer(
         &(
-            var_name.to_string(),
-            var_tag.map(|x| x.to_string()),
+            title.to_string(),
+            tag.map(|x| x.to_string()),
             revisions.clone(),
         ),
         &mut buffer,
@@ -141,14 +160,14 @@ pub fn view_board() -> Result<Vec<(String, String, u64)>, Box<dyn std::error::Er
 
 /// See the details of a bulletin. Returns a vector of (revision number, datasize (bytes), timestamp, backend).
 pub fn get_info(
-    var_name: &str,
-    var_tag: Option<&str>,
+    title: &str,
+    tag: Option<&str>,
 ) -> Result<Vec<(u64, u64, String, String)>, Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
     let mut buffer = Cursor::new(vec![]);
     ciborium::into_writer(&Operation::GetInfo, &mut buffer)?;
     ciborium::into_writer(
-        &(var_name.to_string(), var_tag.map(|x| x.to_string())),
+        &(title.to_string(), tag.map(|x| x.to_string())),
         &mut buffer,
     )?;
     buffer.set_position(0);
@@ -172,15 +191,15 @@ pub fn get_info(
 
 /// Delete specific revisions from a bulletin.
 pub fn clear_revisions(
-    var_name: &str,
-    var_tag: &str,
+    title: &str,
+    tag: &str,
     revisions: Vec<u64>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
     let mut buffer = Cursor::new(vec![]);
     ciborium::into_writer(&Operation::ClearRevision, &mut buffer)?;
     ciborium::into_writer(
-        &(var_name.to_string(), var_tag.to_string(), revisions),
+        &(title.to_string(), tag.to_string(), revisions),
         &mut buffer,
     )?;
     buffer.set_position(0);
@@ -189,11 +208,11 @@ pub fn clear_revisions(
 }
 
 /// Remove all the revisions and the database entry of a bulletin.
-pub fn remove(var_name: &str, var_tag: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn remove(title: &str, tag: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
     let mut buffer = Cursor::new(vec![]);
     ciborium::into_writer(&Operation::Remove, &mut buffer)?;
-    ciborium::into_writer(&(var_name.to_string(), var_tag.to_string()), &mut buffer)?;
+    ciborium::into_writer(&(title.to_string(), tag.to_string()), &mut buffer)?;
     buffer.set_position(0);
     io::copy(&mut buffer, &mut stream)?;
     Ok(())
@@ -201,8 +220,8 @@ pub fn remove(var_name: &str, var_tag: &str) -> Result<(), Box<dyn std::error::E
 
 /// Move the bulletins to a persistent archive. A suffix "acv_name:" is added to the tag.
 pub fn archive(
-    var_name: &str,
-    var_tag: &str,
+    title: &str,
+    tag: &str,
     acv_name: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
@@ -210,8 +229,8 @@ pub fn archive(
     ciborium::into_writer(&Operation::Archive, &mut buffer)?;
     ciborium::into_writer(
         &(
-            var_name.to_string(),
-            var_tag.to_string(),
+            title.to_string(),
+            tag.to_string(),
             acv_name.to_string(),
         ),
         &mut buffer,
