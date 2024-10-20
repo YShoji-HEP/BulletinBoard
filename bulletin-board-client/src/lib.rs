@@ -8,7 +8,7 @@
 //! use bbclient::*;
 //!
 //! fn main() {
-//!     let data: ArrayObject = vec![1f32, 2., -3., 5.].into();
+//!     let data: ArrayObject = vec![1f32, 2., -3., 5.].try_into().unwrap()
 //!     bbclient::post("x", "tag", data.clone()).unwrap();
 //!
 //!     let rcvd = bbclient::read("x").unwrap();

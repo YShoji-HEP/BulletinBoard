@@ -1,6 +1,6 @@
 Rust client for BulletinBoard
 =============================
-[![Sponsors](https://img.shields.io/badge/Offer-Coffee-red)](https://github.com/sponsors/YShoji-HEP)
+[![Sponsors](https://img.shields.io/badge/offer-Coffee-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
 [![Crates.io](https://img.shields.io/crates/v/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
 [![Crates.io](https://img.shields.io/crates/d/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
@@ -22,7 +22,7 @@ use bulletin_board_client as bbclient;
 use bbclient::*;
 
 fn main() {
-    let data: ArrayObject = vec![1f32, 2., -3., 5.].into();
+    let data: ArrayObject = vec![1f32, 2., -3., 5.].try_into().unwrap();
     bbclient::post("x", "tag", data.clone()).unwrap();
 
     let rcvd = bbclient::read("x").unwrap();

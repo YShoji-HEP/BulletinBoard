@@ -1,6 +1,6 @@
 Bulletin Board Server
 =====================
-[![Sponsors](https://img.shields.io/badge/Offer-Coffee-red)](https://github.com/sponsors/YShoji-HEP)
+[![Sponsors](https://img.shields.io/badge/offer-Coffee-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
 [![Crates.io](https://img.shields.io/crates/v/bulletin-board-server?style=flat-square)](https://crates.io/crates/bulletin-board-server)
 [![Crates.io](https://img.shields.io/crates/d/bulletin-board-server?style=flat-square)](https://crates.io/crates/bulletin-board-server)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)

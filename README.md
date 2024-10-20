@@ -1,6 +1,6 @@
 Bulletin Board
 ===========================
-[![Sponsors](https://img.shields.io/badge/Offer-Coffee-red)](https://github.com/sponsors/YShoji-HEP)
+[![Sponsors](https://img.shields.io/badge/offer-Coffee-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
 
 Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) for debugging and data taking purposes.
