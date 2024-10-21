@@ -8,11 +8,11 @@
 //! use bbclient::*;
 //!
 //! fn main() {
-//!     let data: ArrayObject = vec![1f32, 2., -3., 5.].try_into().unwrap()
+//!     let data: ArrayObject = vec![1f32, 2., -3., 5.].try_into().unwrap();
 //!     bbclient::post("x", "tag", data.clone()).unwrap();
 //!
-//!     let rcvd = bbclient::read("x").unwrap();
-//!     let restored = rcvd.unpack().unwrap();
+//!     let recv = bbclient::read("x", None, vec![]).unwrap().pop().unwrap();
+//!     let restored = recv.try_into().unwrap();
 //!     assert_eq!(data, restored);
 //! }
 //! ```
@@ -52,19 +52,12 @@ static ADDR: LazyLock<String> = LazyLock::new(|| {
 });
 
 /// Post an ArrayObject.
-pub fn post(
-    title: &str,
-    tag: &str,
-    obj: ArrayObject,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub fn post(title: &str, tag: &str, obj: ArrayObject) -> Result<(), Box<dyn std::error::Error>> {
     let val = serde_bytes::ByteBuf::from(obj.pack());
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
     let mut buffer = Cursor::new(vec![]);
     ciborium::into_writer(&Operation::Post, &mut buffer)?;
-    ciborium::into_writer(
-        &(title.to_string(), tag.to_string(), val),
-        &mut buffer,
-    )?;
+    ciborium::into_writer(&(title.to_string(), tag.to_string(), val), &mut buffer)?;
     buffer.set_position(0);
     io::copy(&mut buffer, &mut stream)?;
     Ok(())
@@ -80,10 +73,7 @@ pub fn post_as_it_is(
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
     let mut buffer = Cursor::new(vec![]);
     ciborium::into_writer(&Operation::Post, &mut buffer)?;
-    ciborium::into_writer(
-        &(title.to_string(), tag.to_string(), val),
-        &mut buffer,
-    )?;
+    ciborium::into_writer(&(title.to_string(), tag.to_string(), val), &mut buffer)?;
     buffer.set_position(0);
     io::copy(&mut buffer, &mut stream)?;
     Ok(())
@@ -219,20 +209,12 @@ pub fn remove(title: &str, tag: &str) -> Result<(), Box<dyn std::error::Error>> 
 }
 
 /// Move the bulletins to a persistent archive. A suffix "acv_name:" is added to the tag.
-pub fn archive(
-    title: &str,
-    tag: &str,
-    acv_name: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub fn archive(title: &str, tag: &str, acv_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect(&*ADDR)?;
     let mut buffer = Cursor::new(vec![]);
     ciborium::into_writer(&Operation::Archive, &mut buffer)?;
     ciborium::into_writer(
-        &(
-            title.to_string(),
-            tag.to_string(),
-            acv_name.to_string(),
-        ),
+        &(title.to_string(), tag.to_string(), acv_name.to_string()),
         &mut buffer,
     )?;
     buffer.set_position(0);

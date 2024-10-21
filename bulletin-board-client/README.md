@@ -25,8 +25,8 @@ fn main() {
     let data: ArrayObject = vec![1f32, 2., -3., 5.].try_into().unwrap();
     bbclient::post("x", "tag", data.clone()).unwrap();
 
-    let rcvd = bbclient::read("x").unwrap();
-    let restored = rcvd.unpack().unwrap();
+    let recv = bbclient::read("x", None, vec![]).unwrap().pop().unwrap();
+    let restored = recv.try_into().unwrap();
     assert_eq!(data, restored);
 }
 ```

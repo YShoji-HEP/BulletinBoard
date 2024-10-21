@@ -11,9 +11,8 @@ Highlights
 ----------
 * Hybrid backend of memory and file, selected based on the size of the object and the allocated memory.
 * Key is a combination of a title and a tag. Each key contains revisions of `ArrayObject`.
-* The tag can be omitted if no other tags are present.
-* If the revision is omitted, the most recent revision is returned.
-* The data does not persist by default. Use `archive` or `dump` command to make it persistent.
+* Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
+* The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Docker image of the server is available.
 
 Crates.io
@@ -41,13 +40,14 @@ bulletin-board-server
 Rust client: (see [`bulletin-board-client`](bulletin-board-client/README.md))
 ```rust
 use bulletin_board_client as bbclient;
-use array_object::*;
+use bbclient::*;
 
 fn main() {
-    let data: ArrayObject = vec![1f32, 2., -3., 5.].into();
-    bbclient::post("x", "tag", data.clone());
-    let rcvd = bbclient::read("x");
-    let restored = rcvd.unpack().unwrap();
+    let data: ArrayObject = vec![1f32, 2., -3., 5.].try_into().unwrap();
+    bbclient::post("x", "tag", data.clone()).unwrap();
+
+    let recv = bbclient::read("x", None, vec![]).unwrap().pop().unwrap();
+    let restored = recv.try_into().unwrap();
     assert_eq!(data, restored);
 }
 ```
@@ -65,6 +65,7 @@ ToDo
 - [ ] Support for other languages. [Mathematica, Python, Julia, Go, C++, Fortran, ...]
 - [ ] Windows support. 
 - [ ] More informative logs.
+- [ ] GUI (snippets, palettes)
 
 Q&A
 --------------
@@ -72,4 +73,5 @@ Q&A
 Since `BulletinBoard` was originally designed for debugging purposes, it is assumed that most of the data will be deleted at the end. Persistent options (`archive` and `dump`) have been added for a more extensive use such as data taking.
 The advantages of not making it persistent by default are (i) holding data in memory makes read/write speeds faster, (ii) metadata of the archive becomes smaller and (iii) data can be more easily deleted before archiving.
 #### Why not other object storages or databases?
-Especially for debugging, storage may receive large amounts of small data and thus in-memory databases are ideal. However, it may also receive large data like a few hundred MiB, and such data should be stored in files. `BulletinBoard` uses a hybrid backend of memory and file to solve this problem. It also provides persistence options, which are useful for data taking.
+Especially for debugging, storage may receive large amounts of small data and thus in-memory databases are ideal. However, it may also receive large data like a few hundred MiB, and such data should be stored in files. `BulletinBoard` uses a hybrid backend of memory and file to solve this problem.
+Also, the `BulletinBoard` will not return a response if it is not needed. Thus, it can handle very frequent data flows.
