@@ -24,7 +24,7 @@ If it does not compile, see [`wolfram-library-link`](https://crates.io/crates/wo
 Then, copy `target/release/libbulletin_board_mathematica.dylib` to the same directory as `bulletin-board.wl`, which can be downloaded from [here](https://github.com/YShoji-HEP/BulletinBoard/blob/main/bulletin-board-mathematica/bulletin-board.wl).
 
 To post and read the bulletins, 
-```
+```python
 << "bulletin-board.wl";
 BBLoadFunctions["127.0.0.1:7578"];
 BBPost["test",{1,2,3}];
@@ -35,8 +35,8 @@ Functions
 ----------
 |Function|Description|
 |-|-|
-|BBLoadFunctions[address]|Load functions of BulletinBoard client. The address is either "ADDRESS:PORT" or "SOCKETPATH". This has to be executed first.|
-|BBPost[title, tag(optional), data]|Post the data to the server. `title` and `tag` are Text. `data` can be Integer, Real, Complex, Text, or List. For List, the types of the elements should be the same and has to have the same number of elements for nested Lists.|
+|BBLoadFunctions[address(optional)]|Load functions of BulletinBoard client. The address is either "ADDRESS:PORT" or "SOCKETPATH". If the address is not specified, the default value of "127.0.0.1:7578" or "/tmp/bb.sock" is used. This has to be executed first.|
+|BBPost[title, tag(optional), data]|Post the data to the server. `title` and `tag` are Text. `data` can be Integer, Real, Complex, Text, or List. For List, the types of the elements should be the same and has to have the same number of elements for nested Lists. If tag is not set, the default value "Mathematica" is used.|
 |BBRead[title, tag(optional), revisions(optional)]|Read the bulletin. `revisions` can be Integer or List of Integer.|
 |BBStatus[]|Show the status of the server.|
 |BBLog[]|Show the log of the server.|
@@ -47,8 +47,8 @@ Functions
 |BBArchive[title, tag, archiveName]|Save the bulletin to an archive and make the data persistent.|
 |BBLoad[archiveName]|Load the archived data. (The archive name is added to the tag)|
 |BBListArchive[]|List the archives.|
-|BBRenameArchive[archiveFrom, archiveTo]|Rename an archive.|
-|BBDeleteArchive[archiveName]|Delete an archive.|
+|BBRenameArchive[archiveFrom, archiveTo]|Rename an archive. This is executed when `BBReset` is called.|
+|BBDeleteArchive[archiveName]|Delete an archive. This is executed when `BBReset` is called.|
 |BBDump[archiveName]|Save all the bulletins to an archive.|
 |BBRestore[archiveName]|Restore the archived data. (The data is restored to memory/file without modification of the tag)|
 |BBReset[]|Reset the BulletinBoard server.|

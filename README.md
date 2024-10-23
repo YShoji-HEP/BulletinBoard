@@ -15,6 +15,12 @@ Highlights
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Docker image of the server is available.
 
+Caution
+-------
+* The data is not encrypted. Please do not send any confidential data over the network.
+* This crate is under development and is subject to change in specification. (Compatibility across `ArrayObject`, `BulletinBoard` and `dbgbb` is ensured for the most minor numbers.)
+* The included tests access the server and potentially erase existing data.
+
 Crates.io
 -----------------
 |Crate|Version|
@@ -22,6 +28,7 @@ Crates.io
 |BulletinBoard Server|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-server?style=flat-square)](https://crates.io/crates/bulletin-board-server)|
 |Rust Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-client?style=flat-square)](https://crates.io/crates/bulletin-board-client)|
 |Mathematica Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-mathematica?style=flat-square)](https://crates.io/crates/bulletin-board-mathematica)|
+|Python Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-python?style=flat-square)](https://crates.io/crates/bulletin-board-python)|
 
 Docker
 ------
@@ -53,18 +60,27 @@ fn main() {
 ```
 
 Mathematica client: (see [`bulletin-board-mathematica`](bulletin-board-mathematica/README.md))
-```
+```python
 << "bulletin-board.wl";
 BBLoadFunctions["127.0.0.1:7578"];
 BBPost["test",{1,2,3}];
 BBRead["test"]
 ```
 
+Python client: (see [`bulletin-board-python`](bulletin-board-python/README.md))
+```python
+import bulletin_board_client as bbclient
+bbclient.set_addr("127.0.0.1:7578")
+
+bbclient.post("test", "tag", [1,2,3])
+bbclient.read("test")
+```
+
 ToDo
 ----
-- [ ] Support for other languages. [Mathematica, Python, Julia, Go, C++, Fortran, ...]
-- [ ] Windows support. 
-- [ ] More informative logs.
+- [x] Support for Python.
+- [ ] Support for other languages. [Julia, Go, C++, Fortran, ...]
+- [ ] Windows support.
 - [ ] GUI (snippets, palettes)
 
 Q&A

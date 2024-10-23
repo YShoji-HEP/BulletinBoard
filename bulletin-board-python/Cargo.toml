@@ -1,0 +1,24 @@
+[package]
+name = "bulletin-board-python"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Python client for BulletinBoard"
+repository = "https://github.com/YShoji-HEP/BulletinBoard"
+readme = "README.md"
+keywords = ["object_storage", "database", "debugging", "python", "client"]
+categories = ["database", "development-tools::debugging"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "bulletin_board_client"
+crate-type = ["cdylib"]
+
+[dependencies]
+num-complex = "0.4.6"
+pyo3 = { version = "0.22.0", features = ["num-complex"]}
+bbclient = { package = "bulletin-board-client", version = "0.1.3" }
+
+[features]
+default = []
+unix = ["bbclient/unix"]

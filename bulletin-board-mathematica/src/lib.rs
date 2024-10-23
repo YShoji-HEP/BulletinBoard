@@ -25,6 +25,7 @@ fn post_real(link: &mut wstp::Link) {
     link.put_str("Sent").unwrap();
 }
 
+// [v0.2.x] Use link.test_head("System`Complex").unwrap(); 
 #[wll::export(wstp)]
 fn post_complex(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 4);
@@ -78,6 +79,7 @@ fn post_real_array(link: &mut wstp::Link) {
     link.put_str("Sent").unwrap();
 }
 
+// [v0.2.x] Use link.test_head("System`Complex").unwrap(); 
 #[wll::export(wstp)]
 fn post_complex_array(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 4);
