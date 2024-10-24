@@ -62,7 +62,7 @@ fn main() {
 Mathematica client: (see [`bulletin-board-mathematica`](bulletin-board-mathematica/README.md))
 ```python
 << "bulletin-board.wl";
-BBLoadFunctions["127.0.0.1:7578"];
+BBSetAddr["192.168.0.3:7578"];
 BBPost["test",{1,2,3}];
 BBRead["test"]
 ```
@@ -70,7 +70,7 @@ BBRead["test"]
 Python client: (see [`bulletin-board-python`](bulletin-board-python/README.md))
 ```python
 import bulletin_board_client as bbclient
-bbclient.set_addr("127.0.0.1:7578")
+bbclient.set_addr("192.168.0.3:7578")
 
 bbclient.post("test", "tag", [1,2,3])
 bbclient.read("test")

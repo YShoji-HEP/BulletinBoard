@@ -26,7 +26,7 @@ maturin develop -r
 To post and read the bulletins,
 ```python
 import bulletin_board_client as bbclient
-bbclient.set_addr("127.0.0.1:7578")
+bbclient.set_addr("192.168.0.3:7578")
 
 bbclient.post("test", "tag", [1,2,3])
 bbclient.read("test")

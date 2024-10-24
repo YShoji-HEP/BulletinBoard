@@ -26,7 +26,7 @@ Then, copy `target/release/libbulletin_board_mathematica.dylib` to the same dire
 To post and read the bulletins, 
 ```python
 << "bulletin-board.wl";
-BBLoadFunctions["127.0.0.1:7578"];
+BBSetAddr["192.168.0.3:7578"];
 BBPost["test",{1,2,3}];
 BBRead["test"]
 ```
