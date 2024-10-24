@@ -35,7 +35,7 @@ Functions
 ----------
 |Function|Description|
 |-|-|
-|BBLoadFunctions[address(optional)]|Load functions of BulletinBoard client. The address is either "ADDRESS:PORT" or "SOCKETPATH". If the address is not specified, the default value of "127.0.0.1:7578" or "/tmp/bb.sock" is used. This has to be executed first.|
+|BBSetAddr[address]|Set the address of the server. The address is either "ADDRESS:PORT" or "SOCKETPATH". This has to be executed first if you want to use different address from the default value of "127.0.0.1:7578" or "/tmp/bb.sock".|
 |BBPost[title, tag(optional), data]|Post the data to the server. `title` and `tag` are Text. `data` can be Integer, Real, Complex, Text, or List. For List, the types of the elements should be the same and has to have the same number of elements for nested Lists. If tag is not set, the default value "Mathematica" is used.|
 |BBRead[title, tag(optional), revisions(optional)]|Read the bulletin. `revisions` can be Integer or List of Integer.|
 |BBStatus[]|Show the status of the server.|

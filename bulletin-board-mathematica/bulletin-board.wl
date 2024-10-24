@@ -3,7 +3,7 @@
 BeginPackage["BulletinBoardClient`"];
 
 
-BBLoadFunctions::usage = "BBLoadFunctions[address(optional)] loads functions of BulletinBoard client.";
+BBSetAddr::usage = "BBSetAddr[address] sets the address of the server.";
 BBPost::usage = "BBPost[title, tag(optional), data] sends data to the server.";
 BBRead::usage = "BBRead[title, tag(optional), revisions(optional)] retrives data from the server.";
 BBStatus::usage = "BBStatus[] shows the status of the server.";
@@ -27,12 +27,7 @@ Begin["`Private`"];
 
 path=FileNameJoin[DirectoryName[$InputFileName],"libbulletin_board_mathematica.dylib"];
 
-BBLoadFunctions[address_]:=Module[{},
-	SetEnvironment["BB_ADDR"->address];
-	BBLoadFunctions[]
-]
-
-BBLoadFunctions[]:=Module[{lib,loader},
+Module[{lib,loader},
 	lib=LibraryFunctionLoad[path,"load_dbgbb",LinkObject,LinkObject];
 	loader=lib[path];
 	BBPostInteger=loader["post_integer"];
@@ -58,6 +53,11 @@ BBLoadFunctions[]:=Module[{lib,loader},
 	BBDump=loader["dump"];
 	BBRestore=loader["restore"];
 	BBReset=loader["reset"];
+]
+
+
+BBSetAddr[address_]:=Module[{},
+	SetEnvironment["BB_ADDR"->address];
 ]
 
 
