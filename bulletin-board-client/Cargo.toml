@@ -1,6 +1,6 @@
 [package]
 name = "bulletin-board-client"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 license = "Apache-2.0"
 description = "Rust client for BulletinBoard"
@@ -18,3 +18,6 @@ serde_bytes = "0.11.15"
 [features]
 default = []
 unix = []
+ndarray_15 = ["array-object/ndarray_15"]
+ndarray_16 = ["array-object/ndarray_16"]
+nalgebra = ["array-object/nalgebra"]

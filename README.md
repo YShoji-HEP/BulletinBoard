@@ -18,8 +18,8 @@ Highlights
 Caution
 -------
 * The data is not encrypted. Please do not send any confidential data over the network.
-* This crate is under development and is subject to change in specification. (Compatibility across `ArrayObject`, `BulletinBoard` and `dbgbb` is ensured for the most minor numbers.)
-* The included tests access the server and potentially erase existing data.
+* This crate is under development and is subject to change in specification. (Compatibility across `ArrayObject`, `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
+* The included tests will access the server and potentially erase existing data.
 
 Crates.io
 -----------------
