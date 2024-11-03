@@ -8,6 +8,13 @@ Rust client for BulletinBoard
 `BulletinBoard` is an object strage for `ArrayObject` for debugging and data taking purposes.
 For more details, see [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard).
 
+Caution
+-------
+* Clients do not check whether the operation is successful or not to improve performance. Check the log of the server for the errors.
+* The data is not encrypted. Please do not send any confidential data over the network.
+* This crate is under development and is subject to change in specification. (Compatibility across `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
+* The included tests will access the server and potentially erase existing data.
+
 Example
 -------
 Before using `bulletin-board-client`, you must set up a [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard) server and set the server address in the environmental variable. It is convenient to set it in `.cargo/config.toml` of your Rust project:
@@ -37,12 +44,15 @@ use bulletin_board_client as bbclient;
 
 fn main() {
     bbclient::archive("x", "tag", "acv").unwrap();
-    bbclient::reset().unwrap(); // Delete all temporary data.
+    bbclient::reset_server().unwrap(); // Delete all temporary data.
 
     bbclient::load("acv").unwrap();
     dbg!(bbclient::view_board().unwrap());
 }
 ```
+
+See the docs for the details of functions.
+
 Environment Variables
 ---------------------
 |Variable|Default|Description|

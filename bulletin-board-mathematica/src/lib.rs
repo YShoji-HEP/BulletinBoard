@@ -1,7 +1,17 @@
-use bulletin_board_client::{ArrayObject, DataType, Pair, VecShape, VecVecShape};
+use bulletin_board_client::{
+    adaptor::Pair, adaptor::VecShape, adaptor::VecVecShape, ArrayObject, DataType,
+};
 use wolfram_library_link::{self as wll, generate_loader, wstp};
 
 generate_loader!(load_dbgbb);
+
+#[wll::export(wstp)]
+fn set_addr(link: &mut wstp::Link) {
+    assert_eq!(link.test_head("System`List").unwrap(), 1);
+    let addr = link.get_string().unwrap();
+    bulletin_board_client::set_addr(&addr);
+    link.put_str("Server address updated").unwrap();
+}
 
 #[wll::export(wstp)]
 fn post_integer(link: &mut wstp::Link) {
@@ -25,7 +35,6 @@ fn post_real(link: &mut wstp::Link) {
     link.put_str("Sent").unwrap();
 }
 
-// [v0.2.x] Use link.test_head("System`Complex").unwrap(); 
 #[wll::export(wstp)]
 fn post_complex(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 4);
@@ -79,7 +88,6 @@ fn post_real_array(link: &mut wstp::Link) {
     link.put_str("Sent").unwrap();
 }
 
-// [v0.2.x] Use link.test_head("System`Complex").unwrap(); 
 #[wll::export(wstp)]
 fn post_complex_array(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 4);
@@ -254,6 +262,13 @@ fn put_data(link: &mut wstp::Link, data: ArrayObject) {
 }
 
 #[wll::export(wstp)]
+fn version(link: &mut wstp::Link) {
+    assert_eq!(link.test_head("System`List").unwrap(), 0);
+    let version = bulletin_board_client::version().unwrap();
+    link.put_str(&version).unwrap();
+}
+
+#[wll::export(wstp)]
 fn status(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 0);
     let (datasize, memory_used, memory_used_percent, n_bulletins, n_files, n_archives) =
@@ -308,12 +323,15 @@ fn get_info(link: &mut wstp::Link) {
 
 #[wll::export(wstp)]
 fn clear_revisions(link: &mut wstp::Link) {
-    assert_eq!(link.test_head("System`List").unwrap(), 3);
-    let title = link.get_string().unwrap();
-    let tag = link.get_string().unwrap();
+    let argc = link.test_head("System`List").unwrap();
+    let (title, tag) = match argc {
+        2 => (link.get_string().unwrap(), None),
+        3 => (link.get_string().unwrap(), Some(link.get_string().unwrap())),
+        _ => panic!(),
+    };
     if link.get_type().unwrap() == wstp::TokenType::Integer {
         let revision = link.get_i64().unwrap().try_into().unwrap();
-        bulletin_board_client::clear_revisions(&title, &tag, vec![revision]).unwrap();
+        bulletin_board_client::clear_revisions(&title, tag.as_deref(), vec![revision]).unwrap();
     } else {
         let revisions = link
             .get_i64_array()
@@ -322,27 +340,33 @@ fn clear_revisions(link: &mut wstp::Link) {
             .into_iter()
             .map(|&x| x.try_into().unwrap())
             .collect();
-        bulletin_board_client::clear_revisions(&title, &tag, revisions).unwrap();
+        bulletin_board_client::clear_revisions(&title, tag.as_deref(), revisions).unwrap();
     }
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn remove(link: &mut wstp::Link) {
-    assert_eq!(link.test_head("System`List").unwrap(), 2);
-    let title = link.get_string().unwrap();
-    let tag = link.get_string().unwrap();
-    bulletin_board_client::remove(&title, &tag).unwrap();
+    let argc = link.test_head("System`List").unwrap();
+    let (title, tag) = match argc {
+        1 => (link.get_string().unwrap(), None),
+        2 => (link.get_string().unwrap(), Some(link.get_string().unwrap())),
+        _ => panic!(),
+    };
+    bulletin_board_client::remove(&title, tag.as_deref()).unwrap();
     link.put_str("Sent").unwrap();
 }
 
 #[wll::export(wstp)]
 fn archive(link: &mut wstp::Link) {
-    assert_eq!(link.test_head("System`List").unwrap(), 3);
-    let title = link.get_string().unwrap();
-    let tag = link.get_string().unwrap();
+    let argc = link.test_head("System`List").unwrap();
     let acv_name = link.get_string().unwrap();
-    bulletin_board_client::archive(&title, &tag, &acv_name).unwrap();
+    let (title, tag) = match argc {
+        2 => (link.get_string().unwrap(), None),
+        3 => (link.get_string().unwrap(), Some(link.get_string().unwrap())),
+        _ => panic!(),
+    };
+    bulletin_board_client::archive(&acv_name, &title, tag.as_deref()).unwrap();
     link.put_str("Sent").unwrap();
 }
 
@@ -398,8 +422,22 @@ fn restore(link: &mut wstp::Link) {
 }
 
 #[wll::export(wstp)]
-fn reset(link: &mut wstp::Link) {
+fn clear_log(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 0);
-    bulletin_board_client::reset().unwrap();
+    bulletin_board_client::clear_log().unwrap();
+    link.put_str("Sent").unwrap();
+}
+
+#[wll::export(wstp)]
+fn reset_server(link: &mut wstp::Link) {
+    assert_eq!(link.test_head("System`List").unwrap(), 0);
+    bulletin_board_client::reset_server().unwrap();
+    link.put_str("Sent").unwrap();
+}
+
+#[wll::export(wstp)]
+fn terminate_server(link: &mut wstp::Link) {
+    assert_eq!(link.test_head("System`List").unwrap(), 0);
+    bulletin_board_client::terminate_server().unwrap();
     link.put_str("Sent").unwrap();
 }

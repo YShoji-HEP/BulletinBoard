@@ -17,8 +17,9 @@ Highlights
 
 Caution
 -------
+* Clients do not check whether the operation is successful or not to improve performance. Check the log of the server for the errors.
 * The data is not encrypted. Please do not send any confidential data over the network.
-* This crate is under development and is subject to change in specification. (Compatibility across `ArrayObject`, `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
+* This crate is under development and is subject to change in specification. (Compatibility across `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
 * The included tests will access the server and potentially erase existing data.
 
 Crates.io
@@ -81,7 +82,8 @@ ToDo
 - [x] Support for Python.
 - [ ] Support for other languages. [Julia, Go, C++, Fortran, ...]
 - [ ] Windows support.
-- [ ] GUI (snippets, palettes)
+- [ ] GUI (server + client + palettes) will be available soon.
+- [ ] Upload to PyPI and Mathematica paclet repositories.
 
 Q&A
 --------------

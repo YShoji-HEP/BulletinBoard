@@ -1,4 +1,4 @@
-use crate::{ACV_DIR, TMP_DIR};
+use crate::{logging, ACV_DIR, TMP_DIR};
 use chrono::{DateTime, Local};
 use std::fs::{self, File};
 use std::io::{self, Cursor, Read, Seek, Write};
@@ -91,14 +91,6 @@ impl Read for Bulletin {
 }
 
 impl Bulletin {
-    // pub fn new() -> Self {
-    //     Self {
-    //         data: BulletinBackend::Empty,
-    //         datasize: 0,
-    //         timestamp: Local::now(),
-    //         file_opened: None,
-    //     }
-    // }
     pub fn from_archive(
         name: &str,
         offset: u64,
@@ -142,7 +134,10 @@ impl Bulletin {
                 std::io::ErrorKind::Other,
                 "Archived entry cannot be deleted.",
             )),
-            BulletinBackend::Empty => Ok((0, 0, 0)),
+            BulletinBackend::Empty => {
+                logging::warn("Cleared an empty bulletin.".to_string());
+                Ok((0, 0, 0))
+            }
         }
     }
     pub fn save_to_file(&mut self) -> Result<(), std::io::Error> {

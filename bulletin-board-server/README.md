@@ -17,6 +17,13 @@ Highlights
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Docker image of the server is available.
 
+Caution
+-------
+* Clients do not check whether the operation is successful or not to improve performance. Check the log of the server for the errors.
+* The data is not encrypted. Please do not send any confidential data over the network.
+* This crate is under development and is subject to change in specification. (Compatibility across `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
+* The included tests will access the server and potentially erase existing data.
+
 Docker
 ------
 
@@ -38,7 +45,7 @@ Environment Variables
 |BB_LISTEN_ADDR|"127.0.0.1:7578" or "/tmp/bb.sock"|Listen address of the bulletin board server. When UNIX socket is used, the address should be the path to the uncreated socket.|
 |BB_TMP_DIR|"./bb_tmp"|Directory for temporary data.|
 |BB_ACV_DIR|"./bb_acv"|Directory for archives.|
-|BB_TOT_MEM_LIMIT|"1GiB"|Total memory limit. If the memory exceeds the limit, all the bulletins are saved as files.|
+|BB_TOT_MEM_LIMIT|"1GiB"|Total memory limit. If the memory exceeds the limit, all the bulletins are saved as files. The size of metadata is not included in the calculation. The actual memry consumption becomes higher than this.|
 |BB_FILE_THRETHOLD|"1MiB"|Beyond this threthold, the bulletin is saved as a file.|
 |BB_LOG_FILE|"./bulletin-board.log"|Location of the log file.|
 
@@ -47,6 +54,8 @@ Command line options
 |Short|Long|Description|
 |-|-|-|
 |-d|--debug|Log to stdout.|
+|-h|--help|Print help.|
+|-V|--version|Print version.| 
 
 Crate Features
 --------------

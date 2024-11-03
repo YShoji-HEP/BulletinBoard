@@ -1,6 +1,12 @@
-use bbclient::{DataType, VecShape};
+use bbclient::{adaptor::VecShape, DataType};
 use num_complex::Complex64;
 use pyo3::prelude::*;
+
+#[pyfunction]
+fn set_addr(addr: String) -> PyResult<()> {
+    bbclient::set_addr(&addr);
+    Ok(())
+}
 
 #[pyfunction]
 fn post_integer(title: String, tag: String, val: i128) -> PyResult<()> {
@@ -142,6 +148,11 @@ fn read_raw(
 }
 
 #[pyfunction]
+fn version(py: Python<'_>) -> PyResult<PyObject> {
+    Ok(bbclient::version().unwrap().to_object(py))
+}
+
+#[pyfunction]
 fn status_raw(py: Python<'_>) -> PyResult<PyObject> {
     Ok(bbclient::status().unwrap().to_object(py))
 }
@@ -165,20 +176,23 @@ fn get_info_raw(py: Python<'_>, title: String, tag: Option<String>) -> PyResult<
 }
 
 #[pyfunction]
-fn clear_revisions(title: String, tag: String, revisions: Vec<u64>) -> PyResult<()> {
-    bbclient::clear_revisions(&title, &tag, revisions).unwrap();
+#[pyo3(signature = (title, revisions, tag=None))]
+fn clear_revisions_raw(title: String, revisions: Vec<u64>, tag: Option<String>) -> PyResult<()> {
+    bbclient::clear_revisions(&title, tag.as_deref(), revisions).unwrap();
     Ok(())
 }
 
 #[pyfunction]
-fn remove(title: String, tag: String) -> PyResult<()> {
-    bbclient::remove(&title, &tag).unwrap();
+#[pyo3(signature = (title, tag=None))]
+fn remove(title: String, tag: Option<String>) -> PyResult<()> {
+    bbclient::remove(&title, tag.as_deref()).unwrap();
     Ok(())
 }
 
 #[pyfunction]
-fn archive(title: String, tag: String, acv_name: String) -> PyResult<()> {
-    bbclient::archive(&title, &tag, &acv_name).unwrap();
+#[pyo3(signature = (acv_name, title, tag=None))]
+fn archive(acv_name: String, title: String, tag: Option<String>) -> PyResult<()> {
+    bbclient::archive(&acv_name, &title, tag.as_deref()).unwrap();
     Ok(())
 }
 
@@ -218,14 +232,27 @@ fn restore(acv_name: String) -> PyResult<()> {
 }
 
 #[pyfunction]
-fn reset() -> PyResult<()> {
-    bbclient::reset().unwrap();
+fn clear_log() -> PyResult<()> {
+    bbclient::clear_log().unwrap();
+    Ok(())
+}
+
+#[pyfunction]
+fn reset_server() -> PyResult<()> {
+    bbclient::reset_server().unwrap();
+    Ok(())
+}
+
+#[pyfunction]
+fn terminate_server() -> PyResult<()> {
+    bbclient::terminate_server().unwrap();
     Ok(())
 }
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn bulletin_board_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(set_addr, m)?)?;
     m.add_function(wrap_pyfunction!(post_integer, m)?)?;
     m.add_function(wrap_pyfunction!(post_real, m)?)?;
     m.add_function(wrap_pyfunction!(post_complex, m)?)?;
@@ -235,11 +262,12 @@ fn bulletin_board_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(post_complex_array, m)?)?;
     m.add_function(wrap_pyfunction!(post_string_array, m)?)?;
     m.add_function(wrap_pyfunction!(read_raw, m)?)?;
+    m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_function(wrap_pyfunction!(status_raw, m)?)?;
     m.add_function(wrap_pyfunction!(log, m)?)?;
     m.add_function(wrap_pyfunction!(view_board_raw, m)?)?;
     m.add_function(wrap_pyfunction!(get_info_raw, m)?)?;
-    m.add_function(wrap_pyfunction!(clear_revisions, m)?)?;
+    m.add_function(wrap_pyfunction!(clear_revisions_raw, m)?)?;
     m.add_function(wrap_pyfunction!(remove, m)?)?;
     m.add_function(wrap_pyfunction!(archive, m)?)?;
     m.add_function(wrap_pyfunction!(load, m)?)?;
@@ -248,6 +276,8 @@ fn bulletin_board_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(delete_archive, m)?)?;
     m.add_function(wrap_pyfunction!(dump, m)?)?;
     m.add_function(wrap_pyfunction!(restore, m)?)?;
-    m.add_function(wrap_pyfunction!(reset, m)?)?;
+    m.add_function(wrap_pyfunction!(clear_log, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_server, m)?)?;
+    m.add_function(wrap_pyfunction!(terminate_server, m)?)?;
     Ok(())
 }

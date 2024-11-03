@@ -1,1 +1,1 @@
-from .helper import post, read, status, log, view_board, get_info, clear_revisions, remove, archive, load, list_archive, delete_archive, delete_archive, dump, restore, reset, set_addr
+from .helper import set_addr, post, read, version, status, log, view_board, get_info, clear_revisions, remove, archive, load, list_archive, rename_archive, delete_archive, delete_archive, dump, restore, reset_server, terminate_server

@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 pub enum Operation {
     Post,
     Read,
+    Version,
     Status,
     Log,
     ViewBoard,
@@ -19,7 +20,9 @@ pub enum Operation {
     DeleteArchive,
     Dump,
     Restore,
+    ClearLog,
     Reset,
+    Terminate,
 }
 
 /// Response from the server.

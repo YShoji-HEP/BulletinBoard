@@ -2,7 +2,14 @@ from .bulletin_board_client import *
 import numpy as np
 import os
 
-def post(title, tag, val):
+def post(title, second, third=None):
+    match third:
+        case None:
+            val=second
+            tag='Python'
+        case _:
+            val=third
+            tag=second
     match val:
         case int():
             post_integer(title, tag, val)
@@ -43,6 +50,9 @@ def to_array(data):
             return data
 
 def read(title, tag=None, revisions=None):
+    match revisions:
+        case int():
+            revisions = [revisions]
     data = read_raw(title, tag, revisions)
     converted = list(map(to_array, data))
     if len(converted) == 1:
@@ -56,7 +66,7 @@ def status():
         "datasize": data[0],
         "memory_used": data[1],
         "memory_used(%)": data[2],
-        "bulletins": data[3],
+        "objects": data[3],
         "files": data[4],
         "archived": data[5]
     }
@@ -84,5 +94,15 @@ def get_info(title, tag=None):
     data = get_info_raw(title, tag)
     return list(map(bulletin_listing, data))
 
-def set_addr(addr):
-    os.environ["BB_ADDR"]=addr
+def clear_revisions(title, second, third=None):
+    match third:
+        case int():
+            clear_revisions_raw(title, [third], second)
+        case list():
+            clear_revisions_raw(title, third, second)
+        case None:
+            match second:
+                case int():
+                    clear_revisions_raw(title, [second])
+                case list():
+                    clear_revisions_raw(title, second)

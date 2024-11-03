@@ -1,5 +1,5 @@
 use crate::bulletin::{Bulletin, BulletinBackend};
-use crate::{ACV_DIR, FILE_THRETHOLD, TMP_DIR, TOT_MEM_LIMIT};
+use crate::{logging, ACV_DIR, FILE_THRETHOLD, TMP_DIR, TOT_MEM_LIMIT};
 use chrono::DateTime;
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -65,38 +65,37 @@ impl BulletinBoard {
         (
             self.datasize,
             self.memory_used,
-            self.memory_used as f64 / *TOT_MEM_LIMIT as f64,
+            self.memory_used as f64 / *TOT_MEM_LIMIT as f64 * 100.,
             self.n_bulletins,
             self.n_files,
             self.n_archives,
         )
     }
     pub fn view(&self) -> Vec<(String, String, u64)> {
+        if self.bulletins.len() > 1024 {
+            logging::warn("List is truncated (view_board).".to_string());
+        }
         self.bulletins
             .iter()
+            .take(1024)
             .map(|((title, tag), v)| (title.clone(), tag.clone(), v.len() as u64))
             .collect()
     }
-    pub fn get_info(
-        &self,
-        title: String,
-        tag: String,
-    ) -> Option<Vec<(u64, u64, String, String)>> {
-        Some(
-            self.bulletins
-                .get(&(title, tag))?
-                .iter()
-                .enumerate()
-                .map(|(i, val)| {
-                    (
-                        i as u64,
-                        val.datasize,
-                        val.timestamp.to_string(),
-                        val.backend(),
-                    )
-                })
-                .collect(),
-        )
+    pub fn get_info(&self, title: String, tag: String) -> Option<Vec<(u64, u64, String, String)>> {
+        let bulletin = self.bulletins.get(&(title, tag))?;
+        let mut info = vec![];
+        if bulletin.len() > 1024 {
+            logging::warn("List is truncated (view_board).".to_string());
+        }
+        for (i, val) in bulletin.iter().take(1024).enumerate() {
+            info.push((
+                i as u64,
+                val.datasize,
+                val.timestamp.to_string(),
+                val.backend(),
+            ));
+        }
+        Some(info)
     }
     pub fn clear_revisions(
         &mut self,
@@ -197,22 +196,16 @@ impl BulletinBoard {
                             let (_, mem_size, n_file) = bulletin.clear()?;
                             self.n_files -= n_file;
                             self.memory_used -= mem_size;
-                            self.n_archives += 1;
+                            self.n_bulletins -= 1;
                         }
                     }
                 }
                 if !temp.is_empty() {
-                    ciborium::into_writer(
-                        &(title.clone(), tag.clone(), temp.len() as u64),
-                        &mut file_meta,
-                    )?;
+                    ciborium::into_writer(&(title, tag, temp.len() as u64), &mut file_meta)?;
                     buffer.set_position(0);
                     io::copy(&mut buffer, &mut file_meta)?;
-                    let key = (title.clone(), format!("{acv_name}:{tag}"));
-                    let entry = self.bulletins.entry(key).or_default();
-                    for bulletin in temp {
-                        entry.push(bulletin);
-                    }
+                } else {
+                    logging::warn("All revisions are already in archives.".to_string());
                 }
                 Ok(())
             }
