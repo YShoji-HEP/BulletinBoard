@@ -1,7 +1,7 @@
 use crate::bulletin::{Bulletin, BulletinBackend};
 use crate::{logging, ACV_DIR, FILE_THRETHOLD, TMP_DIR, TOT_MEM_LIMIT};
 use chrono::DateTime;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::{self, File};
 use std::io::{self, Cursor, Seek, SeekFrom};
 use std::os::unix::fs::FileExt;
@@ -14,6 +14,7 @@ pub struct BulletinBoard {
     n_files: u64,
     n_archives: u64,
     bulletins: HashMap<(String, String), Vec<Bulletin>>,
+    loaded: HashMap<String, HashSet<(String, String)>>,
 }
 
 impl BulletinBoard {
@@ -28,6 +29,7 @@ impl BulletinBoard {
             n_files: 0,
             n_archives: 0,
             bulletins: HashMap::new(),
+            loaded: HashMap::new(),
         })
     }
     pub fn post(
@@ -218,10 +220,16 @@ impl BulletinBoard {
     pub fn load(&mut self, acv_name: String) -> Result<(), std::io::Error> {
         let filename_meta = format!("{}/{}/meta.bin", *ACV_DIR, acv_name);
         let mut file_meta = File::open(&filename_meta)?;
+        let loaded = self.loaded.entry(acv_name.clone()).or_default();
+        for key in loaded.iter() {
+            self.bulletins.remove(key);
+        }
+
         while let Ok((title, tag, revisions)) =
-            ciborium::from_reader::<(_, String, u64), _>(&mut file_meta)
+            ciborium::from_reader::<(String, String, u64), _>(&mut file_meta)
         {
             let key = (title, format!("{acv_name}:{tag}"));
+            loaded.insert(key.clone());
             let entry = self.bulletins.entry(key).or_default();
             for _ in 0..revisions {
                 if let Ok((offset, datasize, timestamp)) = ciborium::from_reader(&mut file_meta) {

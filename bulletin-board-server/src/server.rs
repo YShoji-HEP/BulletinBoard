@@ -201,6 +201,7 @@ impl BBServer {
                     self.dump(&mut stream)?;
                 }
                 Operation::Restore => {
+                    self.reset()?;
                     self.restore(&mut stream)?;
                 }
                 Operation::ClearLog => {
@@ -340,7 +341,11 @@ impl BBServer {
     }
     fn log(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
         logging::debug(format!("(log)."));
-        let log = std::fs::read_to_string(&*LOG_FILE)?;
+        let log = if Path::new(&*LOG_FILE).exists() {
+            std::fs::read_to_string(&*LOG_FILE)?
+        } else {
+            "No logs yet.\n".to_string()
+        };
         ciborium::into_writer(&log, stream)?;
         Ok(())
     }
@@ -545,7 +550,7 @@ impl BBServer {
         Ok(())
     }
     fn reset(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        logging::debug(format!("(reset/exit)."));
+        logging::debug(format!("(restore/reset/exit)."));
         self.bulletinboard.reset()?;
         for (name_from, name_to) in self.archive_manipulations.drain(..) {
             match name_to {
