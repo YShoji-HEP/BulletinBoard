@@ -3,8 +3,7 @@ use crate::{logging, ACV_DIR, FILE_THRETHOLD, TMP_DIR, TOT_MEM_LIMIT};
 use chrono::DateTime;
 use std::collections::{HashMap, HashSet};
 use std::fs::{self, File};
-use std::io::{self, Cursor, Seek, SeekFrom};
-use std::os::unix::fs::FileExt;
+use std::io::{self, Cursor, Read, Seek, SeekFrom};
 use std::path::Path;
 
 pub struct BulletinBoard {
@@ -284,7 +283,7 @@ impl BulletinBoard {
     pub fn restore(&mut self, acv_name: String) -> Result<(), Box<dyn std::error::Error>> {
         let filename_data = format!("{}/{}/data.bin", *ACV_DIR, acv_name);
         let filename_meta = format!("{}/{}/meta.bin", *ACV_DIR, acv_name);
-        let file_data = File::open(&filename_data)?;
+        let mut file_data = File::open(&filename_data)?;
         let mut file_meta = File::open(&filename_meta)?;
         while let Ok((title, tag, revisions)) =
             ciborium::from_reader::<(String, String, u64), _>(&mut file_meta)
@@ -294,7 +293,8 @@ impl BulletinBoard {
                     ciborium::from_reader::<(u64, u64, _), _>(&mut file_meta)
                 {
                     let mut buf = vec![0u8; datasize.try_into().unwrap()];
-                    file_data.read_exact_at(&mut buf, offset).unwrap();
+                    file_data.seek(SeekFrom::Start(offset))?;
+                    file_data.read_exact(&mut buf).unwrap();
                     let mut bulletin = Bulletin::from_data(buf);
                     bulletin.timestamp = DateTime::from_timestamp_nanos(timestamp).into();
                     self.post(title.clone(), tag.clone(), bulletin)?;
