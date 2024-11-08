@@ -16,7 +16,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 num-complex = "0.4.6"
-pyo3 = { version = "0.22.0", features = ["num-complex"]}
+pyo3 = { version = "0.22.0", features = ["num-complex"] }
 bbclient = { package = "bulletin-board-client", version = "0.2.0" }
 
 [features]

@@ -58,7 +58,7 @@ Functions
 |rename_archive(archive_from, archive_to)|Rename an archive. This is executed when `reset` is called.|
 |delete_archive(archive_name)|Delete an archive. This is executed when `reset` is called.|
 |dump(archive_name)|Save all the bulletins to an archive.|
-|restore(archive_name)|Restore the archived data. (The data is restored to memory/file without modification of the tag)|
+|restore(archive_name)|Reset the server and restore the archived data. (The data is restored to memory/file without modification of the tag)|
 |clear_log()|Clear the log of the server.|
 |reset_server()|Reset the BulletinBoard server.|
 |terminate_server()|Terminate the BulletinBoard server.|

@@ -130,10 +130,10 @@ impl Bulletin {
                 self.data = BulletinBackend::Empty;
                 Ok((self.datasize, 0, 1))
             }
-            BulletinBackend::Archive(_) => Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                "Archived entry cannot be deleted.",
-            )),
+            BulletinBackend::Archive(_) => {
+                logging::warn("Archived entry cannot be deleted.".to_string());
+                Ok((self.datasize, 0, 0))
+            },
             BulletinBackend::Empty => {
                 logging::warn("Cleared an empty bulletin.".to_string());
                 Ok((0, 0, 0))

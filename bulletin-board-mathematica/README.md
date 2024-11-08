@@ -57,7 +57,7 @@ Functions
 |BBRenameArchive[archiveFrom, archiveTo]|Rename an archive. This is executed when `BBReset` is called.|
 |BBDeleteArchive[archiveName]|Delete an archive. This is executed when `BBReset` is called.|
 |BBDump[archiveName]|Save all the bulletins to an archive.|
-|BBRestore[archiveName]|Restore the archived data. (The data is restored to memory/file without modification of the tag)|
+|BBRestore[archiveName]|Reset the server and restore the archived data. (The data is restored to memory/file without modification of the tag)|
 |BBClearLog[]|Clear the log of the server.|
 |BBResetServer[]|Reset the BulletinBoard server.|
 |BBTerminateServer[]|Terminate the BulletinBoard server.|

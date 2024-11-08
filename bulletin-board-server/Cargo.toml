@@ -1,6 +1,6 @@
 [package]
 name = "bulletin-board-server"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 license = "Apache-2.0"
 description = "Object storage for ArrayObject for debugging and data taking purposes."

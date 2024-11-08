@@ -155,7 +155,7 @@ pub fn archive(
     Ok(())
 }
 
-/// Loads an archive. The data is directly read from the archive file and a suffix "acv_name:" is added to the tag. Multiple loads will result in multiple entries of the same data.
+/// Loads or reloads an archive. The data is directly read from the archive file and a suffix "acv_name:" is added to the tag.
 pub fn load(acv_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = connect()?;
     load_ll(&mut stream, acv_name)?;
@@ -190,7 +190,7 @@ pub fn dump(acv_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-/// Restores the data from an archive. Each data is copied to memory or a separate file. No suffix is added to the tag. If the same name and tag exists, the entries are added as new revisions.
+/// Delete all the temporary data and restores data from an archive. Each data is copied to memory or a separate file. No suffix is added to the tag.
 pub fn restore(acv_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = connect()?;
     restore_ll(&mut stream, acv_name)?;

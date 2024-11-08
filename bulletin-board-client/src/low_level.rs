@@ -202,7 +202,7 @@ pub fn archive_ll(
     Ok(())
 }
 
-/// Loads an archive. The data is directly read from the archive file and a suffix "acv_name:" is added to the tag. Multiple loads will result in multiple entries of the same data.
+/// Loads or reloads an archive. The data is directly read from the archive file and a suffix "acv_name:" is added to the tag.
 pub fn load_ll(
     stream: &mut TcpOrUnixStream,
     acv_name: &str,
@@ -264,7 +264,7 @@ pub fn dump_ll(
     Ok(())
 }
 
-/// Restores the data from an archive. Each data is copied to memory or a separate file. No suffix is added to the tag. If the same name and tag exists, the entries are added as new revisions.
+/// Delete all the temporary data and restores data from an archive. Each data is copied to memory or a separate file. No suffix is added to the tag.
 pub fn restore_ll(
     stream: &mut TcpOrUnixStream,
     acv_name: &str,

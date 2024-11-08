@@ -54,6 +54,7 @@ Command line options
 |Short|Long|Description|
 |-|-|-|
 |-d|--debug|Log to stdout.|
+|-l <LOG_LEVEL>| --log-level <LOG_LEVEL>|Log level [0: No logging, 1: Error, 2: +Warn, 3: +Notice (default), 4: +Info, 5: +Debug].|
 |-h|--help|Print help.|
 |-V|--version|Print version.| 
 
