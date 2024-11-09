@@ -35,7 +35,7 @@ Crates.io
 Docker
 ------
 
-The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board). (currently only available for arm64)
+The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board).
  
 Example
 -------
@@ -84,7 +84,7 @@ ToDo
 - [ ] Support for other languages. [Julia, Go, C++, Fortran, ...]
 - [ ] Windows support.
 - [ ] GUI (server + client + palettes) will be available soon.
-- [ ] Upload to PyPI and Mathematica paclet repositories.
+- [x] Distribute at PyPI and Mathematica paclet repositories.
 
 Q&A
 --------------

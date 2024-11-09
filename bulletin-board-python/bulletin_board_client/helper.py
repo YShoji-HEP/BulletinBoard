@@ -3,6 +3,7 @@ import numpy as np
 import os
 
 def post(title, second, third=None):
+    '''Posts an ArrayObject.'''
     match third:
         case None:
             val=second
@@ -50,6 +51,7 @@ def to_array(data):
             return data
 
 def read(title, tag=None, revisions=None):
+    '''Reads ArrayObjects.'''
     match revisions:
         case int():
             revisions = [revisions]
@@ -61,6 +63,7 @@ def read(title, tag=None, revisions=None):
         return converted
 
 def status():
+    '''Returns the status of the server.'''
     data = status_raw()
     return {
         "datasize": data[0],
@@ -79,6 +82,7 @@ def board_listing(data):
     }
 
 def view_board():
+    '''Returns the list of the bulletins.'''
     data = view_board_raw()
     return list(map(board_listing, data))
 
@@ -91,10 +95,12 @@ def bulletin_listing(data):
     }
 
 def get_info(title, tag=None):
+    '''Returns the details of a bulletin.'''
     data = get_info_raw(title, tag)
     return list(map(bulletin_listing, data))
 
 def clear_revisions(title, second, third=None):
+    '''Deletes specific revisions from a bulletin.'''
     match third:
         case int():
             clear_revisions_raw(title, [third], second)

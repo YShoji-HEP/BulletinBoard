@@ -28,7 +28,7 @@ Caution
 Docker
 ------
 
-The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board). (currently only available for arm64)
+The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board).
 
 Example
 -------
@@ -43,7 +43,7 @@ Environment Variables
 ---------------------
 |Variable|Default|Description|
 |-|-|-|
-|BB_LISTEN_ADDR|"127.0.0.1:7578" or "/tmp/bb.sock"|Listen address of the bulletin board server. When UNIX socket is used, the address should be the path to the uncreated socket.|
+|BB_LISTEN_ADDR|"127.0.0.1:7578"|Listen address of the bulletin board server. If you use a Unix socket, the address should be the path to an uncreated socket.|
 |BB_TMP_DIR|"./bb_tmp"|Directory for temporary data.|
 |BB_ACV_DIR|"./bb_acv"|Directory for archives.|
 |BB_TOT_MEM_LIMIT|"1GiB"|Total memory limit. If the memory exceeds the limit, all the bulletins are saved as files. The size of metadata is not included in the calculation. The actual memry consumption becomes higher than this.|

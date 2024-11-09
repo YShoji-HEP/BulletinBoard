@@ -298,7 +298,7 @@ impl TcpOrUnixStream {
         Ok(list)
     }
 
-    /// Renames an archive. Applied after reset.
+    /// Renames an archive. This will be applied after calling reset_server.
     pub fn rename_archive(
         &mut self,
         name_from: &str,
@@ -311,7 +311,7 @@ impl TcpOrUnixStream {
         Ok(())
     }
 
-    /// Deletes an archive. Applied after reset.
+    /// Deletes an archive. This will be applied after after calling reset_server.
     pub fn delete_archive(&mut self, acv_name: &str) -> Result<(), Box<dyn std::error::Error>> {
         let mut buffer = Cursor::new(vec![]);
         ciborium::into_writer(&Operation::DeleteArchive, &mut buffer)?;

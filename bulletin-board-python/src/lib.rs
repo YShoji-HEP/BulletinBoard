@@ -2,6 +2,7 @@ use bbclient::{adaptor::VecShape, DataType};
 use num_complex::Complex64;
 use pyo3::prelude::*;
 
+/// Sets the server address.
 #[pyfunction]
 fn set_addr(addr: String) -> PyResult<()> {
     bbclient::set_addr(&addr);
@@ -147,6 +148,7 @@ fn read_raw(
     Ok(res.to_object(py))
 }
 
+/// Relabels a bulletin.
 #[pyfunction]
 #[pyo3(signature = (title_from, tag_from=None, title_to=None, tag_to=None))]
 fn relabel(
@@ -165,16 +167,19 @@ fn relabel(
     Ok(())
 }
 
+/// Returns the version of the server.
 #[pyfunction]
 fn version(py: Python<'_>) -> PyResult<PyObject> {
     Ok(bbclient::version().unwrap().to_object(py))
 }
 
+/// Returns the status of the server.
 #[pyfunction]
 fn status_raw(py: Python<'_>) -> PyResult<PyObject> {
     Ok(bbclient::status().unwrap().to_object(py))
 }
 
+/// Returns the log of the server.
 #[pyfunction]
 fn log(py: Python<'_>) -> PyResult<PyObject> {
     Ok(bbclient::log().unwrap().to_object(py))
@@ -200,6 +205,7 @@ fn clear_revisions_raw(title: String, revisions: Vec<u64>, tag: Option<String>) 
     Ok(())
 }
 
+/// Removes all the revisions and the database entry of a bulletin.
 #[pyfunction]
 #[pyo3(signature = (title, tag=None))]
 fn remove(title: String, tag: Option<String>) -> PyResult<()> {
@@ -207,6 +213,7 @@ fn remove(title: String, tag: Option<String>) -> PyResult<()> {
     Ok(())
 }
 
+/// Moves a bulletin to a persistent archive.
 #[pyfunction]
 #[pyo3(signature = (acv_name, title, tag=None))]
 fn archive(acv_name: String, title: String, tag: Option<String>) -> PyResult<()> {
@@ -214,60 +221,69 @@ fn archive(acv_name: String, title: String, tag: Option<String>) -> PyResult<()>
     Ok(())
 }
 
+/// Loads or reloads an archive. The data is directly read from the archive file and a suffix "acv_name:" is added to the tag.
 #[pyfunction]
 fn load(acv_name: String) -> PyResult<()> {
     bbclient::load(&acv_name).unwrap();
     Ok(())
 }
 
+/// Shows the list of archive.
 #[pyfunction]
 fn list_archive(py: Python<'_>) -> PyResult<PyObject> {
     Ok(bbclient::list_archive().unwrap().to_object(py))
 }
 
+/// Renames an archive. This will be applied after after calling reset_server.
 #[pyfunction]
 fn rename_archive(name_from: String, name_to: String) -> PyResult<()> {
     bbclient::rename_archive(&name_from, &name_to).unwrap();
     Ok(())
 }
 
+/// Deletes an archive. This will be applied after after calling reset_server.
 #[pyfunction]
 fn delete_archive(acv_name: String) -> PyResult<()> {
     bbclient::delete_archive(&acv_name).unwrap();
     Ok(())
 }
 
+/// Dumps all the unarchived data into an archive.
 #[pyfunction]
 fn dump(acv_name: String) -> PyResult<()> {
     bbclient::dump(&acv_name).unwrap();
     Ok(())
 }
 
+/// Delete all the temporary data and restores data from an archive. Each data is copied to memory or a separate file. No suffix is added to the tag.
 #[pyfunction]
 fn restore(acv_name: String) -> PyResult<()> {
     bbclient::restore(&acv_name).unwrap();
     Ok(())
 }
 
+/// Clears the log file of the server.
 #[pyfunction]
 fn clear_log() -> PyResult<()> {
     bbclient::clear_log().unwrap();
     Ok(())
 }
 
+/// Resets and clears the data. The archived data is not affected, but must be loaded before use.
 #[pyfunction]
 fn reset_server() -> PyResult<()> {
     bbclient::reset_server().unwrap();
     Ok(())
 }
 
+/// Terminates the server.
 #[pyfunction]
 fn terminate_server() -> PyResult<()> {
     bbclient::terminate_server().unwrap();
     Ok(())
 }
 
-/// A Python module implemented in Rust.
+/// BulletinBoard python client
 #[pymodule]
 fn bulletin_board_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(set_addr, m)?)?;

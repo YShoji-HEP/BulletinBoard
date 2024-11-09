@@ -62,9 +62,3 @@ Functions
 |BBClearLog[]|Clear the log of the server.|
 |BBResetServer[]|Reset the BulletinBoard server.|
 |BBTerminateServer[]|Terminate the BulletinBoard server.|
-
-Crate Features
---------------
-|Feature|Description|
-|-|-|
-|`unix`|Use the UNIX socket instead of TCP. Only for UNIX-like OS.|

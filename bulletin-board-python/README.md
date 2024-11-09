@@ -64,8 +64,3 @@ Functions
 |reset_server()|Reset the BulletinBoard server.|
 |terminate_server()|Terminate the BulletinBoard server.|
 
-Crate Features
---------------
-|Feature|Description|
-|-|-|
-|`unix`|Use the UNIX socket instead of TCP. Only for UNIX-like OS.|

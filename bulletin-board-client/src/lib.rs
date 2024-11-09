@@ -179,14 +179,14 @@ pub fn list_archive() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     Ok(list)
 }
 
-/// Renames an archive. Applied after reset.
+/// Renames an archive. This will be applied after after calling reset_server.
 pub fn rename_archive(name_from: &str, name_to: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect()?;
     stream.rename_archive(name_from, name_to)?;
     Ok(())
 }
 
-/// Deletes an archive. Applied after reset.
+/// Deletes an archive. This will be applied after after calling reset_server.
 pub fn delete_archive(acv_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect()?;
     stream.delete_archive(acv_name)?;
