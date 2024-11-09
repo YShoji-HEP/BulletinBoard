@@ -1,3 +1,5 @@
 */target
 */Cargo.lock
 */.cargo
+*/*/__pycache__
+bulletin-board-python/bulletin_board_client/bulletin_board_client*

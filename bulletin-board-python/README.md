@@ -42,9 +42,10 @@ Functions
 ----------
 |Function|Description|
 |-|-|
-|set_addr(address)|Set the address of the server. The address is either "ADDRESS:PORT" or "SOCKETPATH". This has to be executed first if you want to use different address from the default value of "127.0.0.1:7578" or "/tmp/bb.sock".|
+|set_addr(address)|Set the address of the server. The address is either "ADDRESS:PORT" or "SOCKETPATH". If this function is not called, the default address is "127.0.0.1:7578".|
 |post(title, tag(optional), data)|Post the data to the server. `title` and `tag` are str. `data` can be int, float, complex, str, list or numpy.array. Here, list must be able to be comverted to numpy.array. When the tag is ommitted, it becomes `Python`.|
 |read(title, tag=None, revisions=None)|Read the bulletin. `revisions` is a list of int.|
+|relabel(title_from, tag_from=None, title_to=None, tag_to=None)|Relabel a bulletin.|
 |version()|Show the version of the server.|
 |status()|Show the status of the server.|
 |log()|Show the log of the server.|

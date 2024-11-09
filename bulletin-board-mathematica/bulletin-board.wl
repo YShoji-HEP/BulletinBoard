@@ -6,6 +6,7 @@ BeginPackage["BulletinBoardClient`"];
 BBSetAddr::usage = "BBSetAddr[address] sets the address of the server.";
 BBPost::usage = "BBPost[title, tag(optional), data] sends data to the server.";
 BBRead::usage = "BBRead[title, tag(optional), revisions(optional)] retrives data from the server.";
+BBRelabel::usage = "BBRelabel[titleFrom, tagFrom, titleTo, tagTo] relabels a bulletin.";
 BBVersion::usage = "BBVersion[] returns the version of the server.";
 BBStatus::usage = "BBStatus[] returns the status of the server.";
 BBLog::usage = "BBLog[] returns the log of the server.";
@@ -43,6 +44,7 @@ Module[{lib,loader},
 	BBPostComplexArray=loader["post_complex_array"];
 	BBPostStringArray=loader["post_string_array"];
 	BBRead=loader["read"];
+	BBRelabel=loader["relabel"];
 	BBVersion=loader["version"];
 	BBStatusRaw=loader["status"];
 	BBLog=loader["log"];

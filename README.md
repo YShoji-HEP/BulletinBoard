@@ -14,6 +14,7 @@ Highlights
 * Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Docker image of the server is available.
+* Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
 
 Caution
 -------

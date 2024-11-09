@@ -20,7 +20,7 @@ Example
 Before using `bulletin-board-client`, you must set up a [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard) server and set the server address in the environmental variable. It is convenient to set it in `.cargo/config.toml` of your Rust project:
 ```rust
 [env]
-BB_ADDR = "ADDRESS:PORT"
+BB_ADDR = "ADDRESS:PORT" // or "PATH" for Unix socket
 ```
 
 To post and read the bulletins, 
@@ -43,7 +43,7 @@ To make the data persistent,
 use bulletin_board_client as bbclient;
 
 fn main() {
-    bbclient::archive("x", "tag", "acv").unwrap();
+    bbclient::archive("acv", "x", Some("tag")).unwrap();
     bbclient::reset_server().unwrap(); // Delete all temporary data.
 
     bbclient::load("acv").unwrap();
@@ -57,14 +57,13 @@ Environment Variables
 ---------------------
 |Variable|Default|Description|
 |-|-|-|
-|BB_ADDR|"127.0.0.1:7578" or "/tmp/bb.sock"|Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. When UNIX socket is used, the address should be the path to the uncreated socket.|
+|BB_ADDR|"127.0.0.1:7578" or "/tmp/bb.sock"|Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. If you use a Unix socket, the address should be the path to an uncreated socket. The address can be modified later by calling `set_addr(...)`.|
 
 
 Crate Features
 --------------
 |Feature|Description|
 |-|-|
-|`unix`|Use the UNIX socket instead of TCP. Only for UNIX-like OS.|
 |`ndarray_15`|Enable ndarray support. The compatible version is 0.15.x.|
 |`ndarray_16`|Enable ndarray support. The compatible version is 0.16.x.|
 |`nalgebra`|Enable nalgebra support. Confirmed to work with version 0.33.0.|

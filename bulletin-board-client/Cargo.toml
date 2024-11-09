@@ -1,6 +1,6 @@
 [package]
 name = "bulletin-board-client"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "Apache-2.0"
 description = "Rust client for BulletinBoard"
@@ -10,14 +10,17 @@ keywords = ["object_storage", "database", "debugging", "client"]
 categories = ["database-implementations", "development-tools::debugging"]
 
 [dependencies]
-array-object = "0.2.0"
-bulletin-board-common = "0.2.0"
+serde = "1.0.214"
 ciborium = "=0.2.2"
 serde_bytes = "0.11.15"
+array-object = "0.2.1"
+bulletin-board-common = "0.3.1"
 
 [features]
 default = []
-unix = []
 ndarray_15 = ["array-object/ndarray_15"]
 ndarray_16 = ["array-object/ndarray_16"]
 nalgebra = ["array-object/nalgebra"]
+
+[target.'cfg(target_family="unix")'.dependencies]
+regex = "1.11.1"

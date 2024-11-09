@@ -1,12 +1,8 @@
 use std::io::Cursor;
-#[cfg(not(feature = "unix"))]
-use std::net::TcpListener as TcpOrUnixListener;
-#[cfg(not(feature = "unix"))]
-use std::net::TcpStream as TcpOrUnixStream;
-#[cfg(feature = "unix")]
-use std::os::unix::net::UnixListener as TcpOrUnixListener;
-#[cfg(feature = "unix")]
-use std::os::unix::net::UnixStream as TcpOrUnixStream;
+use std::net::TcpListener;
+
+#[cfg(target_family = "unix")]
+use std::os::unix::net::UnixListener;
 
 use crate::board::BulletinBoard;
 use crate::bulletin::Bulletin;
@@ -123,19 +119,29 @@ impl BBServer {
         })
     }
     pub fn listen(&mut self) -> Result<(), std::io::Error> {
-        #[cfg(feature = "unix")]
-        if std::path::Path::new(&*LISTEN_ADDR).exists() {
-            std::fs::remove_file(&*LISTEN_ADDR)?;
+        #[cfg(not(target_family = "unix"))]
+        self.listen_tcp()?;
+        #[cfg(target_family = "unix")]
+        {
+            let re = regex::Regex::new(":[0-9]+$").unwrap();
+            if re.is_match(&*LISTEN_ADDR) {
+                self.listen_tcp()?;
+            } else {
+                self.listen_unix()?;
+            }
         }
+        Ok(())
+    }
+    fn listen_tcp(&mut self) -> Result<(), std::io::Error> {
         {
             let version = env!("CARGO_PKG_VERSION");
             let message = format!("Bulletin Board Server v{version} started.");
             logging::notice(message);
 
-            let message = format!("Listening on {}.", &*LISTEN_ADDR);
+            let message = format!("Listening on TCP socket: {}.", &*LISTEN_ADDR);
             logging::info(message);
         }
-        let listener = TcpOrUnixListener::bind(&*LISTEN_ADDR)?;
+        let listener = TcpListener::bind(&*LISTEN_ADDR)?;
         for stream in listener.incoming() {
             let stream = stream?;
             match self.process(stream) {
@@ -152,7 +158,40 @@ impl BBServer {
         }
         Ok(())
     }
-    fn process(&mut self, mut stream: TcpOrUnixStream) -> Result<bool, Box<dyn std::error::Error>> {
+    #[cfg(target_family = "unix")]
+    fn listen_unix(&mut self) -> Result<(), std::io::Error> {
+        if std::path::Path::new(&*LISTEN_ADDR).exists() {
+            std::fs::remove_file(&*LISTEN_ADDR)?;
+        }
+        {
+            let version = env!("CARGO_PKG_VERSION");
+            let message = format!("Bulletin Board Server v{version} started.");
+            logging::notice(message);
+
+            let message = format!("Listening on Unix socket: {}.", &*LISTEN_ADDR);
+            logging::info(message);
+        }
+        let listener = UnixListener::bind(&*LISTEN_ADDR)?;
+        for stream in listener.incoming() {
+            let stream = stream?;
+            match self.process(stream) {
+                Ok(exit) => {
+                    if exit {
+                        break;
+                    }
+                }
+                Err(err) => {
+                    let err = Box::leak(err);
+                    logging::error(err.to_string());
+                }
+            }
+        }
+        Ok(())
+    }
+    fn process<S: std::io::Read + std::io::Write>(
+        &mut self,
+        mut stream: S,
+    ) -> Result<bool, Box<dyn std::error::Error>> {
         while let Ok(operation) = ciborium::from_reader(&mut stream) {
             match operation {
                 Operation::Post => {
@@ -160,6 +199,9 @@ impl BBServer {
                 }
                 Operation::Read => {
                     self.read(&mut stream)?;
+                }
+                Operation::Relabel => {
+                    self.relabel(&mut stream)?;
                 }
                 Operation::Version => {
                     self.version(&mut stream)?;
@@ -176,7 +218,7 @@ impl BBServer {
                 Operation::GetInfo => {
                     self.get_info(&mut stream)?;
                 }
-                Operation::ClearRevision => {
+                Operation::ClearRevisions => {
                     self.clear_revisions(&mut stream)?;
                 }
                 Operation::Remove => {
@@ -218,12 +260,12 @@ impl BBServer {
         }
         Ok(false)
     }
-    fn get_tag(
+    fn get_tag<S: std::io::Read + std::io::Write>(
         &self,
         operation: &str,
         title: &String,
         tag: Option<String>,
-        stream: Option<&mut TcpOrUnixStream>,
+        stream: Option<&mut S>,
     ) -> Result<String, Box<dyn std::error::Error>> {
         match tag {
             Some(tag) => Ok(tag),
@@ -259,7 +301,10 @@ impl BBServer {
             }
         }
     }
-    fn post(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn post<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let (title, tag, data): (String, String, ByteBuf) = ciborium::from_reader(&mut *stream)?;
         logging::debug(format!("(post) title: {title}, tag: {tag}."));
         let bulletin = Bulletin::from_data(data.to_vec());
@@ -268,7 +313,10 @@ impl BBServer {
             .map_err(|err| BulletinError::new("post", err.to_string(), title, tag, None))?;
         Ok(())
     }
-    fn read(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn read<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let (title, tag, revisions): (String, Option<String>, Vec<u64>) =
             ciborium::from_reader(&mut *stream)?;
         logging::debug(format!("(read) title: {title}, tag: {tag:?}."));
@@ -327,19 +375,38 @@ impl BBServer {
 
         Ok(())
     }
-    fn version(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn relabel<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let (title_from, tag_from, title_to, tag_to): (String, Option<String>, Option<String>, Option<String>) = ciborium::from_reader(&mut *stream)?;
+        logging::debug(format!("(relabel) title_from: {title_from}, tag_from: {tag_from:?}, title_to: {title_to:?}, tag_to: {tag_to:?}."));
+        let tag_from = self.get_tag("read", &title_from, tag_from, Some(&mut *stream))?;
+        self.bulletinboard.relabel(title_from, tag_from, title_to, tag_to)?;
+        Ok(())
+    }
+    fn version<S: std::io::Read + std::io::Write>(
+        &self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         logging::debug(format!("(version)."));
         let version = env!("CARGO_PKG_VERSION").to_string();
         ciborium::into_writer(&version, stream)?;
         Ok(())
     }
-    fn status(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn status<S: std::io::Read + std::io::Write>(
+        &self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         logging::debug(format!("(status)."));
         let status = self.bulletinboard.status();
         ciborium::into_writer(&status, stream)?;
         Ok(())
     }
-    fn log(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn log<S: std::io::Read + std::io::Write>(
+        &self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         logging::debug(format!("(log)."));
         let log = if Path::new(&*LOG_FILE).exists() {
             std::fs::read_to_string(&*LOG_FILE)?
@@ -349,13 +416,19 @@ impl BBServer {
         ciborium::into_writer(&log, stream)?;
         Ok(())
     }
-    fn view_board(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn view_board<S: std::io::Read + std::io::Write>(
+        &self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         logging::debug(format!("(view_board)."));
         let board = self.bulletinboard.view();
         ciborium::into_writer(&board, stream)?;
         Ok(())
     }
-    fn get_info(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn get_info<S: std::io::Read + std::io::Write>(
+        &self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let (title, tag): (String, Option<String>) = ciborium::from_reader(&mut *stream)?;
         logging::debug(format!("(get_info) title: {title}, tag: {tag:?}."));
         let tag = self.get_tag("get_info", &title, tag, Some(&mut *stream))?;
@@ -380,16 +453,16 @@ impl BBServer {
         }
         Ok(())
     }
-    fn clear_revisions(
+    fn clear_revisions<S: std::io::Read + std::io::Write>(
         &mut self,
-        stream: &mut TcpOrUnixStream,
+        stream: &mut S,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let (title, tag, revisions): (String, Option<String>, Vec<u64>) =
             ciborium::from_reader(stream)?;
         logging::debug(format!(
             "(clear_revisions) title: {title}, tag: {tag:?}, revisions: {revisions:?}."
         ));
-        let tag = self.get_tag("clear_revisions", &title, tag, None)?;
+        let tag = self.get_tag("clear_revisions", &title, tag, None::<&mut S>)?;
         self.bulletinboard
             .clear_revisions(title.clone(), tag.clone(), revisions)
             .map_err(|err| {
@@ -403,10 +476,13 @@ impl BBServer {
             })?;
         Ok(())
     }
-    fn remove(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn remove<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let (title, tag): (String, Option<String>) = ciborium::from_reader(stream)?;
         logging::debug(format!("(remove) title: {title}, tag: {tag:?}."));
-        let tag = self.get_tag("remove", &title, tag, None)?;
+        let tag = self.get_tag("remove", &title, tag, None::<&mut S>)?;
         self.bulletinboard
             .remove(title.clone(), tag.clone())
             .map_err(|err| {
@@ -420,11 +496,14 @@ impl BBServer {
             })?;
         Ok(())
     }
-    fn archive(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
-        let (title, tag, acv_name): (String, Option<String>, String) =
+    fn archive<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let (acv_name, title, tag): (String, String, Option<String>) =
             ciborium::from_reader(stream)?;
         logging::debug(format!(
-            "(arvhive) title: {title}, tag: {tag:?}, archive_name: {acv_name}."
+            "(arvhive) archive_name: {acv_name}, title: {title}, tag: {tag:?}."
         ));
         if acv_name.len() == 0 {
             return Err(Box::new(ArchiveError::new(
@@ -433,9 +512,9 @@ impl BBServer {
                 acv_name.clone(),
             )));
         }
-        let tag = self.get_tag("archive", &title, tag, None)?;
+        let tag = self.get_tag("archive", &title, tag, None::<&mut S>)?;
         self.bulletinboard
-            .archive(title.clone(), tag.clone(), acv_name)
+            .archive(acv_name, title.clone(), tag.clone())
             .map_err(|err| {
                 Box::new(BulletinError::new(
                     "archive",
@@ -447,7 +526,10 @@ impl BBServer {
             })?;
         Ok(())
     }
-    fn load(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn load<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let acv_name: String = ciborium::from_reader(stream)?;
         logging::debug(format!("(load) archive_name: {acv_name}."));
         if acv_name.len() == 0 {
@@ -462,7 +544,10 @@ impl BBServer {
             .map_err(|err| ArchiveError::new("load", err.to_string(), acv_name))?;
         Ok(())
     }
-    fn list_archive(&self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn list_archive<S: std::io::Read + std::io::Write>(
+        &self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         logging::debug(format!("(list_archive)."));
         match self.bulletinboard.list_archive() {
             Ok(list) => {
@@ -475,9 +560,9 @@ impl BBServer {
         }
         Ok(())
     }
-    fn rename_archive(
+    fn rename_archive<S: std::io::Read + std::io::Write>(
         &mut self,
-        stream: &mut TcpOrUnixStream,
+        stream: &mut S,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let (acv_from, acv_to): (String, String) = ciborium::from_reader(stream)?;
         logging::debug(format!("(rename_archive) from: {acv_from}, to: {acv_to}."));
@@ -498,9 +583,9 @@ impl BBServer {
         self.archive_manipulations.push((acv_from, Some(acv_to)));
         Ok(())
     }
-    fn delete_archive(
+    fn delete_archive<S: std::io::Read + std::io::Write>(
         &mut self,
-        stream: &mut TcpOrUnixStream,
+        stream: &mut S,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let acv_name: String = ciborium::from_reader(stream)?;
         logging::debug(format!("(delete_archive) archive_name: {acv_name}."));
@@ -514,7 +599,10 @@ impl BBServer {
         self.archive_manipulations.push((acv_name, None));
         Ok(())
     }
-    fn dump(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn dump<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let acv_name: String = ciborium::from_reader(stream)?;
         logging::debug(format!("(dump) archive_name: {acv_name}."));
         if acv_name.len() == 0 {
@@ -527,7 +615,10 @@ impl BBServer {
         self.bulletinboard.dump(acv_name)?;
         Ok(())
     }
-    fn restore(&mut self, stream: &mut TcpOrUnixStream) -> Result<(), Box<dyn std::error::Error>> {
+    fn restore<S: std::io::Read + std::io::Write>(
+        &mut self,
+        stream: &mut S,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let acv_name: String = ciborium::from_reader(stream)?;
         logging::debug(format!("(restore) archive_name: {acv_name}."));
         if acv_name.len() == 0 {

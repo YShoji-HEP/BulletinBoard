@@ -16,6 +16,7 @@ Highlights
 * Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Docker image of the server is available.
+* Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
 
 Caution
 -------
@@ -47,7 +48,10 @@ Environment Variables
 |BB_ACV_DIR|"./bb_acv"|Directory for archives.|
 |BB_TOT_MEM_LIMIT|"1GiB"|Total memory limit. If the memory exceeds the limit, all the bulletins are saved as files. The size of metadata is not included in the calculation. The actual memry consumption becomes higher than this.|
 |BB_FILE_THRETHOLD|"1MiB"|Beyond this threthold, the bulletin is saved as a file.|
+|BB_MAX_RESULTS|1024|The maximum number of results returned by `viewboard` and `get_info` functions.|
 |BB_LOG_FILE|"./bulletin-board.log"|Location of the log file.|
+|BB_LOG_LEVEL|3|Log level. The alllowed values are 0: No logging, 1: Error, 2: +Warn, 3: +Notice, 4: +Info, 5: +Debug.|
+|BB_DEBUG|Not set|If the variable is set, the server logs to stdout.|
 
 Command line options
 ---------------------
@@ -56,13 +60,7 @@ Command line options
 |-d|--debug|Log to stdout.|
 |-l <LOG_LEVEL>| --log-level <LOG_LEVEL>|Log level [0: No logging, 1: Error, 2: +Warn, 3: +Notice (default), 4: +Info, 5: +Debug].|
 |-h|--help|Print help.|
-|-V|--version|Print version.| 
-
-Crate Features
---------------
-|Feature|Description|
-|-|-|
-|`unix`|Use the UNIX socket instead of TCP. Only for UNIX-like OS.|
+|-V|--version|Print version.|
 
 Q&A
 --------------

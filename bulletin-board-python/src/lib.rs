@@ -148,6 +148,24 @@ fn read_raw(
 }
 
 #[pyfunction]
+#[pyo3(signature = (title_from, tag_from=None, title_to=None, tag_to=None))]
+fn relabel(
+    title_from: String,
+    tag_from: Option<String>,
+    title_to: Option<String>,
+    tag_to: Option<String>,
+) -> PyResult<()> {
+    bbclient::relabel(
+        &title_from,
+        tag_from.as_deref(),
+        title_to.as_deref(),
+        tag_to.as_deref(),
+    )
+    .unwrap();
+    Ok(())
+}
+
+#[pyfunction]
 fn version(py: Python<'_>) -> PyResult<PyObject> {
     Ok(bbclient::version().unwrap().to_object(py))
 }
@@ -262,6 +280,7 @@ fn bulletin_board_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(post_complex_array, m)?)?;
     m.add_function(wrap_pyfunction!(post_string_array, m)?)?;
     m.add_function(wrap_pyfunction!(read_raw, m)?)?;
+    m.add_function(wrap_pyfunction!(relabel, m)?)?;
     m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_function(wrap_pyfunction!(status_raw, m)?)?;
     m.add_function(wrap_pyfunction!(log, m)?)?;

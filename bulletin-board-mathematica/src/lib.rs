@@ -262,6 +262,29 @@ fn put_data(link: &mut wstp::Link, data: ArrayObject) {
 }
 
 #[wll::export(wstp)]
+fn relabel(link: &mut wstp::Link) {
+    assert_eq!(link.test_head("System`List").unwrap(), 4);
+    let title_from = link.get_string().unwrap();
+    let tag_from = link.get_string().unwrap();
+    let title_to = link.get_string().unwrap();
+    let tag_to = link.get_string().unwrap();
+    let tag_from = match tag_from.as_str() {
+        "" => None,
+        _ => Some(tag_from.as_str()),
+    };
+    let title_to = match title_to.as_str() {
+        "" => None,
+        _ => Some(title_to.as_str()),
+    };
+    let tag_to = match tag_to.as_str() {
+        "" => None,
+        _ => Some(tag_to.as_str()),
+    };
+    bulletin_board_client::relabel(&title_from, tag_from, title_to, tag_to).unwrap();
+    link.put_str("Sent").unwrap();
+}
+
+#[wll::export(wstp)]
 fn version(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 0);
     let version = bulletin_board_client::version().unwrap();

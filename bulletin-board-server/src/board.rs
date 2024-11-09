@@ -1,5 +1,5 @@
 use crate::bulletin::{Bulletin, BulletinBackend};
-use crate::{logging, ACV_DIR, FILE_THRETHOLD, TMP_DIR, TOT_MEM_LIMIT};
+use crate::{logging, ACV_DIR, FILE_THRETHOLD, MAX_RESULTS, TMP_DIR, TOT_MEM_LIMIT};
 use chrono::DateTime;
 use std::collections::{HashMap, HashSet};
 use std::fs::{self, File};
@@ -62,6 +62,36 @@ impl BulletinBoard {
             .map(|key| key.1.clone())
             .collect()
     }
+    pub fn relabel(
+        &mut self,
+        title_from: String,
+        tag_from: String,
+        title_to: Option<String>,
+        tag_to: Option<String>,
+    ) -> Result<(), std::io::Error> {
+        match self
+            .bulletins
+            .remove(&(title_from.clone(), tag_from.clone()))
+        {
+            Some(mut bulletins) => {
+                let title_to = match title_to {
+                    Some(val) => val,
+                    None => title_from,
+                };
+                let tag_to = match tag_to {
+                    Some(val) => val,
+                    None => tag_from,
+                };
+                let entry = self.bulletins.entry((title_to, tag_to)).or_default();
+                entry.append(&mut bulletins);
+                Ok(())
+            }
+            None => Err(std::io::Error::new(
+                std::io::ErrorKind::NotFound,
+                "Not found.",
+            )),
+        }
+    }
     pub fn status(&self) -> (u64, u64, f64, u64, u64, u64) {
         (
             self.datasize,
@@ -73,22 +103,22 @@ impl BulletinBoard {
         )
     }
     pub fn view(&self) -> Vec<(String, String, u64)> {
-        if self.bulletins.len() > 1024 {
+        if self.bulletins.len() > *MAX_RESULTS {
             logging::warn("List is truncated (view_board).".to_string());
         }
         self.bulletins
             .iter()
-            .take(1024)
+            .take(*MAX_RESULTS)
             .map(|((title, tag), v)| (title.clone(), tag.clone(), v.len() as u64))
             .collect()
     }
     pub fn get_info(&self, title: String, tag: String) -> Option<Vec<(u64, u64, String, String)>> {
         let bulletin = self.bulletins.get(&(title, tag))?;
         let mut info = vec![];
-        if bulletin.len() > 1024 {
+        if bulletin.len() > *MAX_RESULTS {
             logging::warn("List is truncated (view_board).".to_string());
         }
-        for (i, val) in bulletin.iter().take(1024).enumerate() {
+        for (i, val) in bulletin.iter().take(*MAX_RESULTS).enumerate() {
             info.push((
                 i as u64,
                 val.datasize,
@@ -146,9 +176,9 @@ impl BulletinBoard {
     }
     pub fn archive(
         &mut self,
+        acv_name: String,
         title: String,
         tag: String,
-        acv_name: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
         match self.bulletins.remove(&(title.clone(), tag.clone())) {
             Some(mut rev_list) => {
@@ -276,7 +306,7 @@ impl BulletinBoard {
     pub fn dump(&mut self, acv_name: String) -> Result<(), Box<dyn std::error::Error>> {
         let keys: Vec<_> = self.bulletins.keys().cloned().collect();
         for (title, tag) in keys {
-            self.archive(title.clone(), tag.clone(), acv_name.clone())?;
+            self.archive(acv_name.clone(), title.clone(), tag.clone())?;
         }
         Ok(())
     }
