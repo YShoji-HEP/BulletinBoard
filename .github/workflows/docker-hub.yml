@@ -1,0 +1,56 @@
+
+name: docker-hub
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            dir: amd64
+          - runner: ubuntu-latest
+            target: i686-unknown-linux-gnu
+            dir: 386
+          - runner: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            dir: arm64
+          - runner: ubuntu-latest
+            target: armv7-unknown-linux-gnueabi
+            dir: arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Build bulletin-board-server
+        run: cross build -r --target ${{ matrix.platform.target }} --target-dir ../docker/${{ matrix.platform.dir }}
+        working-directory: bulletin-board-server
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/386,linux/arm
+          push: true
+          tags: yshojihep/bulletin-board:latest
