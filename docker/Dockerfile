@@ -1,6 +1,8 @@
 FROM debian:latest
 
-COPY --chmod=777 $TARGETARCH/bulletin-board-server /bin/
+ARG TARGETARCH
+
+COPY --chmod=777 bulletin-board-server-$TARGETARCH /bin/bulletin-board-server
 
 ENV BB_TMP_DIR="/data/tmp"
 

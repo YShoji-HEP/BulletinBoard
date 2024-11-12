@@ -15,29 +15,42 @@ jobs:
         platform:
           - runner: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            dir: amd64
+            tag: amd64
           - runner: ubuntu-latest
             target: i686-unknown-linux-gnu
-            dir: 386
+            tag: "386"
           - runner: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            dir: arm64
+            tag: arm64
           - runner: ubuntu-latest
             target: armv7-unknown-linux-gnueabi
-            dir: arm
+            tag: arm
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install cross
         run: cargo install cross --git https://github.com/cross-rs/cross
       - name: Build bulletin-board-server
-        run: cross build -r --target ${{ matrix.platform.target }} --target-dir ../docker/${{ matrix.platform.dir }}
+        run: cross build -r --target ${{ matrix.platform.target }} --target-dir dist
         working-directory: bulletin-board-server
+      - run: mv bulletin-board-server/dist/${{ matrix.platform.target }}/release/bulletin-board-server bulletin-board-server-${{ matrix.platform.tag }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.platform.tag }}
+          path: bulletin-board-server-${{ matrix.platform.tag }}
 
   docker:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dist-*
+          path: docker/
+          merge-multiple: true
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -50,7 +63,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          file: docker/Dockerfile
+          context: docker
           platforms: linux/amd64,linux/arm64,linux/386,linux/arm
           push: true
           tags: yshojihep/bulletin-board:latest
