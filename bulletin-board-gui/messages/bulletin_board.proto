@@ -1,0 +1,158 @@
+syntax = "proto3";
+package bulletin_board;
+
+/////////////////
+// Inner struct
+/////////////////
+
+message ResBulletinItem {
+    string title = 1;
+    string tag = 2;
+    uint64 revisions = 3;
+    bool require_tag = 4;
+}
+
+message ResBulletinInfo {
+    uint64 revision = 1;
+    uint64 datasize = 2;
+    string timestamp = 3;
+    string backend = 4;
+}
+
+/////////////////
+// Request
+/////////////////
+
+// [DART-SIGNAL]
+message ReqStartServer {
+    string address = 1;
+}
+
+// [DART-SIGNAL]
+message ReqStopServer {}
+
+// [DART-SIGNAL]
+message ReqSetAddr {
+    string address = 1;
+}
+
+// [DART-SIGNAL]
+message ReqRelabel {
+    string title_from = 1;
+    string tag_from = 2;
+    string title_to = 3;
+    string tag_to = 4;
+}
+
+// [DART-SIGNAL]
+message ReqVersion {}
+
+// [DART-SIGNAL]
+message ReqStatus {}
+
+// [DART-SIGNAL]
+message ReqLog {}
+
+// [DART-SIGNAL]
+message ReqViewBoard {}
+
+// [DART-SIGNAL]
+message ReqGetInfo {
+    string title = 1;
+    string tag = 2;
+}
+
+// [DART-SIGNAL]
+message ReqRemove {
+    string title = 1;
+    string tag = 2;
+}
+
+// [DART-SIGNAL]
+message ReqArchive {
+    string title = 1;
+    string tag = 2;
+    string acv_name = 3;
+}
+
+// [DART-SIGNAL]
+message ReqLoad {
+    string acv_name = 1;
+}
+
+// [DART-SIGNAL]
+message ReqListArchive {}
+
+// [DART-SIGNAL]
+message ReqRenameArchive {
+    string acv_from = 1;
+    string acv_to = 2;
+}
+
+// [DART-SIGNAL]
+message ReqDeleteArchive {
+    string acv_name = 1;
+}
+
+// [DART-SIGNAL]
+message ReqDump {
+    string acv_name = 1;
+}
+
+// [DART-SIGNAL]
+message ReqRestore {
+    string acv_name = 1;
+}
+
+// [DART-SIGNAL]
+message ReqClearLog {}
+
+// [DART-SIGNAL]
+message ReqReset {}
+
+// [DART-SIGNAL]
+message ReqExit {}
+
+// [DART-SIGNAL]
+message ReqKeyInput {
+    string text = 1;
+}
+
+/////////////////
+// Response
+/////////////////
+
+// [RUST-SIGNAL]
+message ResVersion {
+    string version = 1;
+}
+
+// [RUST-SIGNAL]
+message ResStatus {
+    uint64 totalDatasize = 1;
+    uint64 memoryUsed = 2;
+    double memoryUsedPercentage = 3;
+    uint64 bulletins = 4;
+    uint64 files = 5;
+    uint64 archives = 6;
+}
+
+// [RUST-SIGNAL]
+message ResLog {
+    string log = 1;
+}
+
+// [RUST-SIGNAL]
+message ResViewBoard {
+    repeated ResBulletinItem bulletins = 1;
+}
+
+// [RUST-SIGNAL]
+message ResGetInfo {
+    repeated ResBulletinInfo info = 1;
+}
+
+// [RUST-SIGNAL]
+message ResListArchive {
+    repeated string archives = 1;
+}
