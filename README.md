@@ -18,6 +18,7 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 * Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
+* GUI application is now available.
 
 ## Caution
 
@@ -37,7 +38,11 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 
 ## Docker
 
-The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board).
+The docker image is available and you can run the server by
+```
+docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board:latest
+```
+For details, see [DockerHub](https://hub.docker.com/r/yshojihep/bulletin-board).
  
 ## Example
 

@@ -6,6 +6,12 @@
 name: bulletin-board-python
 
 on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -149,6 +155,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
     needs: [linux, musllinux, windows, macos, sdist]
     permissions:
       # Use to sign the release artifacts
