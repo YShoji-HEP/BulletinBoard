@@ -167,10 +167,18 @@ fn relabel(
     Ok(())
 }
 
+/// Returns the version of the client.
+#[pyfunction]
+fn client_version(py: Python<'_>) -> PyResult<PyObject> {
+    let client_version = env!("CARGO_PKG_VERSION").to_string();
+    Ok(client_version.to_object(py))
+}
+
 /// Returns the version of the server.
 #[pyfunction]
-fn version(py: Python<'_>) -> PyResult<PyObject> {
-    Ok(bbclient::version().unwrap().to_object(py))
+fn server_version(py: Python<'_>) -> PyResult<PyObject> {
+    let server_version = bbclient::server_version().unwrap();
+    Ok(server_version.to_object(py))
 }
 
 /// Returns the status of the server.
@@ -297,7 +305,8 @@ fn bulletin_board_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(post_string_array, m)?)?;
     m.add_function(wrap_pyfunction!(read_raw, m)?)?;
     m.add_function(wrap_pyfunction!(relabel, m)?)?;
-    m.add_function(wrap_pyfunction!(version, m)?)?;
+    m.add_function(wrap_pyfunction!(client_version, m)?)?;
+    m.add_function(wrap_pyfunction!(server_version, m)?)?;
     m.add_function(wrap_pyfunction!(status_raw, m)?)?;
     m.add_function(wrap_pyfunction!(log, m)?)?;
     m.add_function(wrap_pyfunction!(view_board_raw, m)?)?;

@@ -1,5 +1,5 @@
-Bulletin Board Server
-=====================
+# Bulletin Board Server
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/YShojiHEP)
 
 [!["Github Sponsors"](https://img.shields.io/badge/GitHub-Sponsors-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
@@ -11,8 +11,8 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 
 `BulletinBoard` is a part of [`dbgbb`](https://github.com/YShoji-HEP/dbgbb) project.
 
-Highlights
-----------
+## Highlights
+
 * Hybrid backend of memory and file, selected based on the size of the object and the allocated memory.
 * Key is a combination of a title and a tag. Each key contains revisions of `ArrayObject`.
 * Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
@@ -20,20 +20,26 @@ Highlights
 * Docker image of the server is available.
 * Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
 
-Caution
--------
+## Caution
+
 * Clients do not check whether the operation is successful or not to improve performance. Check the log of the server for the errors.
 * The data is not encrypted. Please do not send any confidential data over the network.
 * This crate is under development and is subject to change in specification. (Compatibility across `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
 * The included tests will access the server and potentially erase existing data.
 
-Docker
-------
+## Built-in server (GUI)
+The server is included in [`BulletinBoard GUI`](../bulletin-board-gui/). Choose `Built-in` in the settings page and start the server in the start page.
 
-The docker image is found [here](https://hub.docker.com/r/yshojihep/bulletin-board).
+## Docker
 
-Example
--------
+The docker image is available and you can run the server by
+```
+docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board:latest
+```
+For details, see [DockerHub](https://hub.docker.com/r/yshojihep/bulletin-board).
+
+## Example
+
 Install and run the server with the specified listen address.
 ```bash
 cargo install bulletin-board-server
@@ -41,8 +47,8 @@ export BB_LISTEN_ADDR = "0.0.0.0:7578"
 bulletin-board-server
 ```
 
-Environment Variables
----------------------
+## Environment Variables
+
 |Variable|Default|Description|
 |-|-|-|
 |BB_LISTEN_ADDR|"127.0.0.1:7578"|Listen address of the bulletin board server. If you use a Unix socket, the address should be the path to an uncreated socket.|
@@ -55,8 +61,8 @@ Environment Variables
 |BB_LOG_LEVEL|3|Log level. The alllowed values are 0: No logging, 1: Error, 2: +Warn, 3: +Notice, 4: +Info, 5: +Debug.|
 |BB_DEBUG|Not set|If the variable is set, the server logs to stdout.|
 
-Command line options
----------------------
+## Command line options
+
 |Short|Long|Description|
 |-|-|-|
 |-d|--debug|Log to stdout.|
@@ -64,8 +70,8 @@ Command line options
 |-h|--help|Print help.|
 |-V|--version|Print version.|
 
-Q&A
---------------
+## Q&A
+
 #### Why not persistent by default?
 Since `BulletinBoard` was originally designed for debugging purposes, it is assumed that most of the data will be deleted at the end. Persistent options (`archive` and `dump`) have been added for a more extensive use such as data taking.
 The advantages of not making it persistent by default are (i) holding data in memory makes read/write speeds faster, (ii) metadata of the archive becomes smaller and (iii) data can be more easily deleted before archiving.

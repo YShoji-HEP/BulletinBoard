@@ -131,11 +131,11 @@ impl Bulletin {
                 Ok((self.datasize, 0, 1))
             }
             BulletinBackend::Archive(_) => {
-                logging::warn("Archived entry cannot be deleted.".to_string());
+                logging::info("Archived entry cannot be deleted.".to_string());
                 Ok((self.datasize, 0, 0))
             },
             BulletinBackend::Empty => {
-                logging::warn("Cleared an empty bulletin.".to_string());
+                logging::info("Cleared an empty bulletin.".to_string());
                 Ok((0, 0, 0))
             }
         }

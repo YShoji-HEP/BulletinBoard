@@ -1,21 +1,18 @@
-Bulletin Board GUI
-===========================
+# Bulletin Board GUI
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/YShojiHEP)
 
 [!["Github Sponsors"](https://img.shields.io/badge/GitHub-Sponsors-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
 
-GUI for `BulletinBoard`.
+GUI for `BulletinBoard`. 
 
 <img src="snapshot.png" width="500">
 
-Highlights
-----------
-* Hybrid backend of memory and file, selected based on the size of the object and the allocated memory.
-* Key is a combination of a title and a tag. Each key contains revisions of `ArrayObject`.
-* Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
-* The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
-* Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
+## Highlights
+* Includes a built-in server.
+* Copy the title and the tag by clicking the panel.
+* Various operations of the server via GUI.
 
 ## Using Rust Inside Flutter
 

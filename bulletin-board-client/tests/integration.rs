@@ -8,4 +8,6 @@ fn post_read() {
     let recv = bbclient::read("new_title", None, vec![]).unwrap().pop().unwrap();
     let restored: Vec<f64> = recv.try_into().unwrap();
     assert_eq!(data, restored);
+    dbg!(bbclient::client_version());
+    dbg!(bbclient::server_version().unwrap());
 }

@@ -157,7 +157,7 @@ impl TcpOrUnixStream {
     }
 
     /// Returns the version of the server.
-    pub fn version(&mut self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn server_version(&mut self) -> Result<String, Box<dyn std::error::Error>> {
         let mut buffer = Cursor::new(vec![]);
         ciborium::into_writer(&Operation::Version, &mut buffer)?;
         self.send(buffer)?;

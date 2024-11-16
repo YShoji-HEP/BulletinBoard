@@ -285,10 +285,17 @@ fn relabel(link: &mut wstp::Link) {
 }
 
 #[wll::export(wstp)]
-fn version(link: &mut wstp::Link) {
+fn client_version(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 0);
-    let version = bulletin_board_client::version().unwrap();
-    link.put_str(&version).unwrap();
+    let client_version = env!("CARGO_PKG_VERSION").to_string();
+    link.put_str(&client_version).unwrap();
+}
+
+#[wll::export(wstp)]
+fn server_version(link: &mut wstp::Link) {
+    assert_eq!(link.test_head("System`List").unwrap(), 0);
+    let server_version = bulletin_board_client::server_version().unwrap();
+    link.put_str(&server_version).unwrap();
 }
 
 #[wll::export(wstp)]

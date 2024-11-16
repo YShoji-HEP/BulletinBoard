@@ -1,5 +1,5 @@
-Bulletin Board Server
-=====================
+# Bulletin Board Server
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/YShojiHEP)
 
 [!["Github Sponsors"](https://img.shields.io/badge/GitHub-Sponsors-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
@@ -14,14 +14,15 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 * Key is a combination of a title and a tag. Each key contains revisions of `ArrayObject`.
 * Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
-* Docker image of the server is available.
 * Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
 
 ## Docker
+You can run the BulletinBoard server can via
 ```
-docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board
+docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board:latest
 ```
-Or use `docker-compose.yml`
+
+A sample docker compose file is
 ```
 version: "3"
 services:

@@ -1,5 +1,5 @@
-Common source for Bulletin Board
-===========================
+# Common source for Bulletin Board
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/YShojiHEP)
 
 [!["Github Sponsors"](https://img.shields.io/badge/GitHub-Sponsors-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
@@ -11,8 +11,8 @@ Common source for Bulletin Board
 See [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard) for details.
 This crate includes a common source for `bulletin-board-server` and `bulletin-board-client`.
 
-Caution
--------
+## Caution
+
 * Clients do not check whether the operation is successful or not to improve performance. Check the log of the server for the errors.
 * The data is not encrypted. Please do not send any confidential data over the network.
 * This crate is under development and is subject to change in specification. (Compatibility across `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)

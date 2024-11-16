@@ -5,11 +5,22 @@ build-backend = "maturin"
 [project]
 name = "bulletin_board_client"
 requires-python = ">=3.8"
+dependencies = ["numpy"]
 classifiers = [
+    "Topic :: Database",
+    "Topic :: Software Development :: Debuggers",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
+keywords = ["object_storage", "database", "debugging", "python", "client"]
 dynamic = ["version"]
+
 [tool.maturin]
 features = ["pyo3/extension-module"]
+
+[project.urls]
+Repository = "https://github.com/YShoji-HEP/BulletinBoard"
+funding = "https://buymeacoffee.com/yshojihep"
+sponsor = "https://github.com/sponsors/YShoji-HEP"

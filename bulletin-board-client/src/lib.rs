@@ -95,10 +95,16 @@ pub fn relabel(
 }
 
 /// Returns the version of the server.
-pub fn version() -> Result<String, Box<dyn std::error::Error>> {
+pub fn server_version() -> Result<String, Box<dyn std::error::Error>> {
     let mut stream = TcpOrUnixStream::connect()?;
-    let version = stream.version()?;
+    let version = stream.server_version()?;
     Ok(version)
+}
+
+/// Returns the version of the client.
+pub fn client_version() -> String {
+    let client_version = env!("CARGO_PKG_VERSION").to_string();
+    client_version
 }
 
 /// Returns the status of the server.

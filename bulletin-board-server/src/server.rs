@@ -254,6 +254,10 @@ impl BBServer {
                 }
                 Operation::Terminate => {
                     self.reset()?;
+                    let re = regex::Regex::new(":[0-9]+$").unwrap();
+                    if !re.is_match(&*LISTEN_ADDR) && std::path::Path::new(&*LISTEN_ADDR).exists() {
+                        std::fs::remove_file(&*LISTEN_ADDR)?;
+                    }
                     return Ok(true);
                 }
             };
@@ -379,10 +383,16 @@ impl BBServer {
         &mut self,
         stream: &mut S,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let (title_from, tag_from, title_to, tag_to): (String, Option<String>, Option<String>, Option<String>) = ciborium::from_reader(&mut *stream)?;
+        let (title_from, tag_from, title_to, tag_to): (
+            String,
+            Option<String>,
+            Option<String>,
+            Option<String>,
+        ) = ciborium::from_reader(&mut *stream)?;
         logging::debug(format!("(relabel) title_from: {title_from}, tag_from: {tag_from:?}, title_to: {title_to:?}, tag_to: {tag_to:?}."));
         let tag_from = self.get_tag("read", &title_from, tag_from, Some(&mut *stream))?;
-        self.bulletinboard.relabel(title_from, tag_from, title_to, tag_to)?;
+        self.bulletinboard
+            .relabel(title_from, tag_from, title_to, tag_to)?;
         Ok(())
     }
     fn version<S: std::io::Read + std::io::Write>(

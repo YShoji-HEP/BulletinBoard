@@ -1,5 +1,5 @@
-Mathematica client for BulletinBoard
-====================================
+# Mathematica client for BulletinBoard
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/YShojiHEP)
 
 [!["Github Sponsors"](https://img.shields.io/badge/GitHub-Sponsors-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
@@ -10,14 +10,31 @@ Mathematica client for BulletinBoard
 `BulletinBoard` is an object strage for `ArrayObject` for debugging and data taking purposes.
 For more details, see [`BulletinBoard`](https://github.com/YShoji-HEP/BulletinBoard).
 
-Caution
--------
+## Caution
+
 * Clients do not check whether the operation is successful or not to improve performance. Check the log of the server for the errors.
 * The data is not encrypted. Please do not send any confidential data over the network.
 * This crate is under development and is subject to change in specification. (Compatibility across `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
 
-Example
--------
+## Install
+
+The package can be installed via [Paclet repository](https://resources.wolframcloud.com/PacletRepository/resources/Yshojihep/BulletinBoardClient/) as
+```bash
+PacletInstall["Yshojihep/BulletinBoardClient"]
+```
+
+## Example
+
+To post and read the bulletins, 
+```python
+<< "Yshojihep`BulletinBoardClient`";
+BBSetAddr["192.168.0.3:7578"];
+
+BBPost["test",{1,2,3}];
+BBRead["test"]
+```
+## Compilation
+
 First, you need to clone the repository:
 ```bash
 cargo clone bulletin-board-mathematica
@@ -29,25 +46,18 @@ Then, go to `bulletin-board-mathematica` directory and run
 cargo build -r
 ```
 If it does not compile, see [`wolfram-library-link`](https://crates.io/crates/wolfram-library-link). Notice that `Mathematica` or `Wolfram Engine` has to be installed before the compilation.
-Then, copy `target/release/libbulletin_board_mathematica.dylib` to the same directory as `bulletin-board.wl`, which can be downloaded from [here](https://github.com/YShoji-HEP/BulletinBoard/blob/main/bulletin-board-mathematica/bulletin-board.wl).
+Then, copy `target/release/libbulletin_board_mathematica.*` to `BulletinBoardClient/LibraryResources/`.
 
-To post and read the bulletins, 
-```python
-<< "bulletin-board.wl";
-BBSetAddr["192.168.0.3:7578"];
-BBPost["test",{1,2,3}];
-BBRead["test"]
-```
+## Functions
 
-Functions
-----------
 |Function|Description|
 |-|-|
 |BBSetAddr[address]|Set the address of the server. The address is either "ADDRESS:PORT" or "SOCKETPATH". If this function is not called, the default address is "127.0.0.1:7578".|
 |BBPost[title, tag(optional), data]|Post the data to the server. `title` and `tag` are Text. `data` can be Integer, Real, Complex, Text, or List. For List, the types of the elements should be the same and has to have the same number of elements for nested Lists. If tag is not set, the default value "Mathematica" is used.|
 |BBRead[title, tag(optional), revisions(optional)]|Read the bulletin. `revisions` can be Integer or List of Integer.|
 |BBRelabel[titleFrom, tagFrom, titleTo, tagTo]|Relabel a bulletin. The last three arguments can be ommited by setting them as "".|
-|BBVersion[]|Show the version of the server.|
+|BBClientVersion[]|Show the client version|
+|BBServerVersion[]|Show the server version.|
 |BBStatus[]|Show the status of the server.|
 |BBLog[]|Show the log of the server.|
 |BBViewBoard[]|List the bulletins.|
