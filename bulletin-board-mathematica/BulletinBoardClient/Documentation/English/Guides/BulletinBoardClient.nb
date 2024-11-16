@@ -1,0 +1,325 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     11680,        317]
+NotebookOptionsPosition[      7774,        232]
+NotebookOutlinePosition[      8307,        250]
+CellTagsIndexPosition[      8264,        247]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["BulletinBoardClient", "GuideTitle",
+ CellID->2017712345,ExpressionUUID->"9d6bcdaa-19db-43ea-823d-7072473d47b1"],
+
+Cell[TextData[{
+ "Mathematica client for BulletinBoard.\nSee ",
+ ButtonBox["GitHub",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://github.com/YShoji-HEP/BulletinBoard/tree/main/bulletin-board-\
+mathematica"], None},
+  ButtonNote->
+   "https://github.com/YShoji-HEP/BulletinBoard/tree/main/bulletin-board-\
+mathematica"],
+ " for the details."
+}], "GuideAbstract",
+ CellChangeTimes->{{3.940334800442903*^9, 3.940334810754601*^9}},
+ CellID->777112638,ExpressionUUID->"9f5f0dc2-2baa-461b-a438-3830c1ef7c4f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "GuideFunctionsSection",
+ CellID->2084049459,ExpressionUUID->"d2dcb976-17a3-40f3-956c-100871644e85"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TagBox[
+   FrameBox["\<\"XXXX\"\>"],
+   "FunctionPlaceholder"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"c40ac8e4-27e1-4161-a8df-4d4f38357a23",ExpressionUUID->
+  "6f6970ec-224d-405a-8d9c-16451b39a5a3"],
+ " \[LongDash] ",
+ Cell[BoxData[
+  TagBox[
+   TagBox[
+    FrameBox["description"],
+    "GuideTextPlaceholder"],
+   EventHandlerTag[{"MouseClicked" :> SelectionMove[
+       EvaluationCell[], All, Cell], Method -> "Preemptive", PassEventsDown -> 
+     Automatic, PassEventsUp -> True}]]],ExpressionUUID->
+  "a69e9d35-9e04-45db-8fe3-0fd7e662a80f"]
+}], "GuideText",
+ CellID->1160974843,ExpressionUUID->"7b889291-347d-4369-8718-6aee64404710"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TagBox[
+   FrameBox["\<\"XXXX\"\>"],
+   "FunctionPlaceholder"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"c5c6736a-1ff4-4e4e-8fcf-2d9846cbae62",ExpressionUUID->
+  "092fb75e-1d06-43e4-b746-d569137acecc"],
+ " \[LongDash] ",
+ Cell[BoxData[
+  TagBox[
+   TagBox[
+    FrameBox["description"],
+    "GuideTextPlaceholder"],
+   EventHandlerTag[{"MouseClicked" :> SelectionMove[
+       EvaluationCell[], All, Cell], Method -> "Preemptive", PassEventsDown -> 
+     Automatic, PassEventsUp -> True}]]],ExpressionUUID->
+  "74f2506f-231d-498a-a0d9-a9588ec0af0a"]
+}], "GuideText",
+ CellID->467769659,ExpressionUUID->"7d10e6c9-f117-4f3a-ad11-b1b613733667"],
+
+Cell[CellGroupData[{
+
+Cell["\t", "GuideDelimiter",
+ CellID->2014510793,ExpressionUUID->"1636940f-b7d5-4811-95a5-d610d171de61"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TagBox[
+   FrameBox["\<\"XXXX\"\>"],
+   "FunctionPlaceholder"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
+  "bebfc9dc-821a-4c5d-92a5-2db51ccee458"],
+ Cell[BoxData[
+  RowBox[{
+  Cell[TextData[StyleBox[
+   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
+    "29a0b4a6-3baa-4c03-91de-4b3eb7a9bf42"], 
+   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
+    "b5a8b650-83e2-4a87-a8c6-7fddd6e7405f", 
+     "bd0d5326-a108-42b8-95b3-d5f5b52faccd"], $CellContext`cellobj$$ = 
+    CellObject[
+    "20271aae-c627-4ace-beec-eba314e5fc34", 
+     "066fe349-463c-4ebd-8bdd-4730f9eb01af"]}, 
+    TemplateBox[{
+      GraphicsBox[{{
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         CircleBox[{0, 0}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
+       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
+       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
+       BaselinePosition -> (Center -> 
+        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
+     "InlineListingAddButton"],
+    Initialization:>($CellContext`nbobj$$ = 
+      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
+  "InlineListingAddButton",ExpressionUUID->
+  "20271aae-c627-4ace-beec-eba314e5fc34"]
+}], "InlineGuideFunctionListing",
+ CellID->655719349,ExpressionUUID->"7dff6aa1-9460-4ce0-9c61-b59f9b449cef"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Tech Notes", "GuideTutorialsSection",
+ CellID->1936505886,ExpressionUUID->"4c2b17cd-f5c5-4bea-82b7-057b3f163705"],
+
+Cell["XXXX", "GuideTutorial",
+ CellID->1739755717,ExpressionUUID->"677b2bce-b98f-4a63-a3b7-0e252bd9aee3"],
+
+Cell["XXXX", "GuideTutorial",
+ CellID->2084481714,ExpressionUUID->"de1335a8-dd23-4c76-a2c3-eef6b8745d86"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "GuideMoreAboutSection",
+ CellChangeTimes->{{3.8430423939366693`*^9, 3.843042395176153*^9}},
+ CellID->1983433687,ExpressionUUID->"39133343-9389-425c-a7d4-98687dcb5824"],
+
+Cell["XXXX", "GuideMoreAbout",
+ CellID->181325028,ExpressionUUID->"0a14dbd2-c8a7-408c-987c-6dff8fc33c39"],
+
+Cell["XXXX", "GuideMoreAbout",
+ CellID->250450503,ExpressionUUID->"0d280af6-7576-4121-af09-3cc479527884"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Links", "GuideRelatedLinksSection",
+ CellID->253655801,ExpressionUUID->"6b1fb569-e8ed-4f88-b09f-3c07c3da32f9"],
+
+Cell["https://github.com/YShoji-HEP/BulletinBoard", "GuideRelatedLinks",
+ CellChangeTimes->{3.940334436198339*^9, 3.9403344711424513`*^9},
+ CellID->604165924,ExpressionUUID->"9a0d11a6-abff-458a-9e56-47c3eabac749"],
+
+Cell["https://github.com/YShoji-HEP/ArrayObject", "GuideRelatedLinks",
+ CellID->885315380,ExpressionUUID->"95a84b84-c8b0-4ff1-9470-686e289c76de"],
+
+Cell["https://github.com/YShoji-HEP/dbgbb", "GuideRelatedLinks",
+ CellID->1728885244,ExpressionUUID->"dae0e941-60c4-414f-803a-fb13bd8c31f9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->438008112,ExpressionUUID->"d8206317-1ed6-423f-83aa-e7ad89b5ded9"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"fd2f2c6b-c468-42af-bd10-95d3dcaf772b"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"701ab001-cb2c-4bce-8051-34b6f45b8f29"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "ab5ab59d-b1f9-435d-b821-791c0ba3126f"]
+}], "History",
+ CellID->28396468,ExpressionUUID->"2a0d8d95-d587-42b3-83aa-8e347c68b7b4"],
+
+Cell[CellGroupData[{
+
+Cell["Categorization", "CategorizationSection",
+ CellID->518068042,ExpressionUUID->"1e42bbe3-2122-4f30-a2a6-18ce4bc1b83c"],
+
+Cell["Guide", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->1270876956,ExpressionUUID->"f02ff2f5-0da3-4e19-a616-43adc3ab3489"],
+
+Cell["Yshojihep/BulletinBoardClient", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->756646430,ExpressionUUID->"6522a793-506d-428f-9c33-a9c669e15ce1"],
+
+Cell["Yshojihep`BulletinBoardClient`", "Categorization",
+ CellLabel->"Context",
+ CellID->1705875123,ExpressionUUID->"9a4f2d3b-c4c5-4aed-b2e0-544fb716cb24"],
+
+Cell["Yshojihep/BulletinBoardClient/guide/BulletinBoardClient", \
+"Categorization",
+ CellLabel->"URI",
+ CellID->1736504811,ExpressionUUID->"1bc4e653-8640-4f95-8776-a71507d1816b"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Keywords", "KeywordsSection",
+ CellID->1133595747,ExpressionUUID->"bae3fa0d-7a3c-4973-867c-fb11c70407ba"],
+
+Cell["XXXX", "Keywords",
+ CellID->2016287292,ExpressionUUID->"60db722b-a779-4307-b0e1-62a0604ecb5c"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{Automatic, 140}, {12, Automatic}},
+TaggingRules-><|"Paclet" -> "Yshojihep/BulletinBoardClient"|>,
+FrontEndVersion->"14.1 for Mac OS X ARM (64-bit) (July 16, 2024)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "GuidePageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"b5a8b650-83e2-4a87-a8c6-7fddd6e7405f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 117, 1, 86, "GuideTitle",ExpressionUUID->"9d6bcdaa-19db-43ea-823d-7072473d47b1",
+ CellID->2017712345],
+Cell[696, 25, 516, 13, 57, "GuideAbstract",ExpressionUUID->"9f5f0dc2-2baa-461b-a438-3830c1ef7c4f",
+ CellID->777112638]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1249, 43, 109, 1, 71, "GuideFunctionsSection",ExpressionUUID->"d2dcb976-17a3-40f3-956c-100871644e85",
+ CellID->2084049459],
+Cell[1361, 46, 713, 19, 25, "GuideText",ExpressionUUID->"7b889291-347d-4369-8718-6aee64404710",
+ CellID->1160974843],
+Cell[2077, 67, 712, 19, 25, "GuideText",ExpressionUUID->"7d10e6c9-f117-4f3a-ad11-b1b613733667",
+ CellID->467769659],
+Cell[CellGroupData[{
+Cell[2814, 90, 104, 1, 26, "GuideDelimiter",ExpressionUUID->"1636940f-b7d5-4811-95a5-d610d171de61",
+ CellID->2014510793],
+Cell[2921, 93, 1670, 42, 25, "InlineGuideFunctionListing",ExpressionUUID->"7dff6aa1-9460-4ce0-9c61-b59f9b449cef",
+ CellID->655719349]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4640, 141, 119, 1, 73, "GuideTutorialsSection",ExpressionUUID->"4c2b17cd-f5c5-4bea-82b7-057b3f163705",
+ CellID->1936505886],
+Cell[4762, 144, 105, 1, 23, "GuideTutorial",ExpressionUUID->"677b2bce-b98f-4a63-a3b7-0e252bd9aee3",
+ CellID->1739755717],
+Cell[4870, 147, 105, 1, 23, "GuideTutorial",ExpressionUUID->"de1335a8-dd23-4c76-a2c3-eef6b8745d86",
+ CellID->2084481714]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5012, 153, 191, 2, 73, "GuideMoreAboutSection",ExpressionUUID->"39133343-9389-425c-a7d4-98687dcb5824",
+ CellID->1983433687],
+Cell[5206, 157, 105, 1, 23, "GuideMoreAbout",ExpressionUUID->"0a14dbd2-c8a7-408c-987c-6dff8fc33c39",
+ CellID->181325028],
+Cell[5314, 160, 105, 1, 23, "GuideMoreAbout",ExpressionUUID->"0d280af6-7576-4121-af09-3cc479527884",
+ CellID->250450503]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5456, 166, 124, 1, 73, "GuideRelatedLinksSection",ExpressionUUID->"6b1fb569-e8ed-4f88-b09f-3c07c3da32f9",
+ CellID->253655801],
+Cell[5583, 169, 213, 2, 23, "GuideRelatedLinks",ExpressionUUID->"9a0d11a6-abff-458a-9e56-47c3eabac749",
+ CellID->604165924],
+Cell[5799, 173, 145, 1, 23, "GuideRelatedLinks",ExpressionUUID->"95a84b84-c8b0-4ff1-9470-686e289c76de",
+ CellID->885315380],
+Cell[5947, 176, 140, 1, 23, "GuideRelatedLinks",ExpressionUUID->"dae0e941-60c4-414f-803a-fb13bd8c31f9",
+ CellID->1728885244]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6124, 182, 110, 1, 71, "MetadataSection",ExpressionUUID->"d8206317-1ed6-423f-83aa-e7ad89b5ded9",
+ CellID->438008112],
+Cell[6237, 185, 475, 12, 25, "History",ExpressionUUID->"2a0d8d95-d587-42b3-83aa-8e347c68b7b4",
+ CellID->28396468],
+Cell[CellGroupData[{
+Cell[6737, 201, 122, 1, 20, "CategorizationSection",ExpressionUUID->"1e42bbe3-2122-4f30-a2a6-18ce4bc1b83c",
+ CellID->518068042],
+Cell[6862, 204, 134, 2, 70, "Categorization",ExpressionUUID->"f02ff2f5-0da3-4e19-a616-43adc3ab3489",
+ CellID->1270876956],
+Cell[6999, 208, 157, 2, 70, "Categorization",ExpressionUUID->"6522a793-506d-428f-9c33-a9c669e15ce1",
+ CellID->756646430],
+Cell[7159, 212, 155, 2, 70, "Categorization",ExpressionUUID->"9a4f2d3b-c4c5-4aed-b2e0-544fb716cb24",
+ CellID->1705875123],
+Cell[7317, 216, 178, 3, 70, "Categorization",ExpressionUUID->"1bc4e653-8640-4f95-8776-a71507d1816b",
+ CellID->1736504811]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7532, 224, 111, 1, 20, "KeywordsSection",ExpressionUUID->"bae3fa0d-7a3c-4973-867c-fb11c70407ba",
+ CellID->1133595747],
+Cell[7646, 227, 100, 1, 70, "Keywords",ExpressionUUID->"60db722b-a779-4307-b0e1-62a0604ecb5c",
+ CellID->2016287292]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
