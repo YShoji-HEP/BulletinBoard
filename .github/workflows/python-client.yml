@@ -3,15 +3,15 @@
 #
 #    maturin generate-ci -m bulletin-board-python/Cargo.toml github
 #
-name: bulletin-board-python
+name: python-client
 
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
     tags:
       - '*'
-  pull_request:
+  # pull_request:
   workflow_dispatch:
 
 permissions:

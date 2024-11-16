@@ -45,9 +45,6 @@ message ReqRelabel {
 }
 
 // [DART-SIGNAL]
-message ReqVersion {}
-
-// [DART-SIGNAL]
 message ReqStatus {}
 
 // [DART-SIGNAL]
@@ -121,11 +118,6 @@ message ReqKeyInput {
 /////////////////
 // Response
 /////////////////
-
-// [RUST-SIGNAL]
-message ResVersion {
-    string version = 1;
-}
 
 // [RUST-SIGNAL]
 message ResStatus {

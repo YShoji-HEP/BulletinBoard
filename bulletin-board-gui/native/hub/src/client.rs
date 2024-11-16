@@ -56,15 +56,6 @@ pub async fn relabel() {
     }
 }
 
-pub async fn version() {
-    let receiver = ReqVersion::get_dart_signal_receiver();
-    while let Some(_) = receiver.recv().await {
-        if let Ok(version) = bbclient::version() {
-            ResVersion { version }.send_signal_to_dart();
-        }
-    }
-}
-
 pub async fn status() {
     let receiver = ReqStatus::get_dart_signal_receiver();
     while let Some(_) = receiver.recv().await {

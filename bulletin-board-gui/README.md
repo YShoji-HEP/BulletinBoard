@@ -14,7 +14,7 @@ GUI for `BulletinBoard`.
 * Copy the title and the tag by clicking the panel.
 * Various operations of the server via GUI.
 
-## Using Rust Inside Flutter
+## Compilation (Rinf)
 
 This project leverages Flutter for GUI and Rust for the backend logic,
 utilizing the capabilities of the

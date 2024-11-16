@@ -1,0 +1,49 @@
+name: flutter-app
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-latest
+            target: linux
+          - runner: windows-latest
+            target: windows
+          - runner: macos-13
+            target: macos
+          - runner: macos-latest
+            target: macos
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Install GTK3+
+        if: ${{ matrix.platform.target == 'linux' }}
+        run: sudo apt update && sudo apt install libgtk-3-dev
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Set up Rinf
+        run: cargo install rinf
+      - name: Generate message
+        run: rinf message
+        working-directory: bulletin-board-gui
+      - name: Build flutter app
+        run: flutter build ${{ matrix.platform.target }}
+        working-directory: bulletin-board-gui
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform.target }}
+          path: bulletin-board-gui/build/${{ matrix.platform.target }}

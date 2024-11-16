@@ -23,7 +23,6 @@ async fn main() {
     tokio::task::spawn(client::start_server());
     tokio::task::spawn(client::stop_server());
     tokio::task::spawn(client::relabel());
-    tokio::task::spawn(client::version());
     tokio::task::spawn(client::status());
     tokio::task::spawn(client::log());
     tokio::task::spawn(client::view_board());
