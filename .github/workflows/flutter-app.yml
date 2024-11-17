@@ -15,15 +15,19 @@ jobs:
           - runner: ubuntu-latest
             target: linux
             artifact: linux-amd64
+            path: bulletin-board-gui/build/linux/x64/release/bundle
           - runner: windows-latest
             target: windows
             artifact: windows-amd64
+            path: bulletin-board-gui/build/windows/x64/runner/Release
           - runner: macos-13
             target: macos
             artifact: macos-amd64
+            path: bulletin-board-gui/build/macos/Build/Products/Release
           - runner: macos-latest
             target: macos
             artifact: macos-arm64
+            path: bulletin-board-gui/build/macos/Build/Products/Release
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -48,4 +52,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform.artifact }}
-          path: bulletin-board-gui/build
+          path: ${{ matrix.platform.path }}

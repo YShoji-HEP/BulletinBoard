@@ -114,13 +114,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                   RegExp exp = RegExp(r':[0-9]+$');
                                   final match =
                                       exp.firstMatch(listenAddress.text);
-                                  String port;
+                                  String serverAddress;
                                   if (match == null) {
-                                    port = ':7578';
+                                      serverAddress = listenAddress.text;
                                   } else {
-                                    port = match[0]!;
+                                      serverAddress = '127.0.0.1${match[0]!}';
                                   }
-                                  final serverAddress = '127.0.0.1$port';
                                   ReqSetAddr(address: serverAddress)
                                       .sendSignalToRust();
                                   settings.put(
