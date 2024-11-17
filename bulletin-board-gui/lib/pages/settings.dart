@@ -46,6 +46,19 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           Text('Server settings', style: indexStyle),
           RadioListTile<bool>(
+            title: const Text('Remote server'),
+            subtitle: const Text('Connect to a remote Bulletin Board server.'),
+            value: false,
+            groupValue: builtInServer,
+            onChanged: (value) => setState(() {
+              ReqSetAddr(
+                      address:
+                          settings.get('serverAddress') ?? '127.0.0.1:7578')
+                  .sendSignalToRust();
+              settings.put('builtInServer', false);
+            }),
+          ),
+          RadioListTile<bool>(
             title: const Text('Built-in server'),
             subtitle: const Text('Use the built-in Bulletin Board server.'),
             value: true,
@@ -64,19 +77,6 @@ class _SettingsPageState extends State<SettingsPage> {
               final serverAddress = '127.0.0.1$port';
               ReqSetAddr(address: serverAddress).sendSignalToRust();
               settings.put('builtInServer', true);
-            }),
-          ),
-          RadioListTile<bool>(
-            title: const Text('Remote server'),
-            subtitle: const Text('Connect to a remote Bulletin Board server.'),
-            value: false,
-            groupValue: builtInServer,
-            onChanged: (value) => setState(() {
-              ReqSetAddr(
-                      address:
-                          settings.get('serverAddress') ?? '127.0.0.1:7578')
-                  .sendSignalToRust();
-              settings.put('builtInServer', false);
             }),
           ),
           const SizedBox(
