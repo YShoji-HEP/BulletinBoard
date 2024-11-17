@@ -14,20 +14,22 @@ jobs:
         platform:
           - runner: ubuntu-latest
             target: linux
+            artifact: linux-amd64
           - runner: windows-latest
             target: windows
+            artifact: windows-amd64
           - runner: macos-13
             target: macos
+            artifact: macos-amd64
           - runner: macos-latest
             target: macos
+            artifact: macos-arm64
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
-      - name: Set up ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Install GTK3+
+      - name: Install build tools
         if: ${{ matrix.platform.target == 'linux' }}
-        run: sudo apt update && sudo apt install libgtk-3-dev
+        run: sudo apt update && sudo apt install -y curl git unzip xz-utils zip libglu1-mesa clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -45,5 +47,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.target }}
+          name: ${{ matrix.platform.artifact }}
           path: bulletin-board-gui/build/${{ matrix.platform.target }}
