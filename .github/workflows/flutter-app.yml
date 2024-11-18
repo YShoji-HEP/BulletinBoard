@@ -15,19 +15,19 @@ jobs:
           - runner: ubuntu-latest
             target: linux
             artifact: linux-amd64
-            path: bulletin-board-gui/build/linux/x64/release/bundle
+            path: build/linux/x64/release/bundle
           - runner: windows-latest
             target: windows
             artifact: windows-amd64
-            path: bulletin-board-gui/build/windows/x64/runner/Release
+            path: build/windows/x64/runner/Release
           - runner: macos-13
             target: macos
             artifact: macos-amd64
-            path: bulletin-board-gui/build/macos/Build/Products/Release/bulletin_board.app
+            path: build/macos/Build/Products/Release/bulletin_board.app
           - runner: macos-latest
             target: macos
             artifact: macos-arm64
-            path: bulletin-board-gui/build/macos/Build/Products/Release/bulletin_board.app
+            path: build/macos/Build/Products/Release/bulletin_board.app
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -53,7 +53,8 @@ jobs:
         run: flutter build ${{ matrix.platform.target }}
         working-directory: bulletin-board-gui
       - name: Move the app
-        run: mkdir dist && mv path dist/
+        run: mkdir dist && mv ${{ matrix.platform.path }} ../dist/
+        working-directory: bulletin-board-gui
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
