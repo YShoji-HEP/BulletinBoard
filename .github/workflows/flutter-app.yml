@@ -23,11 +23,11 @@ jobs:
           - runner: macos-13
             target: macos
             artifact: macos-amd64
-            path: bulletin-board-gui/build/macos/Build/Products/Release
+            path: bulletin-board-gui/build/macos/Build/Products/Release/bulletin_board.app
           - runner: macos-latest
             target: macos
             artifact: macos-arm64
-            path: bulletin-board-gui/build/macos/Build/Products/Release
+            path: bulletin-board-gui/build/macos/Build/Products/Release/bulletin_board.app
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -48,8 +48,10 @@ jobs:
       - name: Build flutter app
         run: flutter build ${{ matrix.platform.target }}
         working-directory: bulletin-board-gui
+      - name: Move the app
+        run: mkdir dist && mv path dist/
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform.artifact }}
-          path: ${{ matrix.platform.path }}
+          path: dist
