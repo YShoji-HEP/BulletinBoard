@@ -18,7 +18,7 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 * Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
-* GUI application is now available.
+* GUI application is now available. You can download the binary files from [Release](https://github.com/YShoji-HEP/BulletinBoard/releases).
 
 ## Caution
 
@@ -89,7 +89,7 @@ bbclient.read("test")
 
 - [x] Support for Python.
 - [x] Windows support.
-- [x] GUI (server + client + palettes) will be available soon.
+- [x] GUI app (server + client + palettes).
 - [x] Distribute at PyPI and Mathematica paclet repositories.
 - [ ] Support for other languages. [Julia, Go, C++, Fortran, ...]
 - [ ] `Watch` function to signal external programs.
