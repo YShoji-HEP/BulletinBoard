@@ -19,6 +19,7 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Docker image of the server is available.
 * Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
+* GUI application is available. You can download the binary files from [Release](https://github.com/YShoji-HEP/BulletinBoard/releases).
 
 ## Caution
 
@@ -27,18 +28,11 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 * This crate is under development and is subject to change in specification. (Compatibility across `BulletinBoard` and `dbgbb` is ensured for the most minor version numbers.)
 * The included tests will access the server and potentially erase existing data.
 
-## Built-in server (GUI)
-The server is included in [`BulletinBoard GUI`](../bulletin-board-gui/). Choose `Built-in` in the settings page and start the server in the start page.
+## Usage
 
-## Docker
+There are several options for running the `BulletinBoard` server.
 
-The docker image is available and you can run the server by
-```
-docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board:latest
-```
-For details, see [DockerHub](https://hub.docker.com/r/yshojihep/bulletin-board).
-
-## Example
+**Cargo**
 
 Install and run the server with the specified listen address.
 ```bash
@@ -46,6 +40,18 @@ cargo install bulletin-board-server
 export BB_LISTEN_ADDR = "0.0.0.0:7578"
 bulletin-board-server
 ```
+
+**Built-in server (GUI)**
+
+The server is included in [`BulletinBoard GUI`](../bulletin-board-gui/). Choose `Built-in` in the settings page and start the server in the start page.
+
+**Docker**
+
+The docker image is available and you can run the server by
+```
+docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board:latest
+```
+For details, see [DockerHub](https://hub.docker.com/r/yshojihep/bulletin-board).
 
 ## Environment Variables
 

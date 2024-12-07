@@ -1,7 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:rinf/rinf.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:bulletin_board/messages/all.dart';
 import 'package:bulletin_board/pages/start.dart';
 import 'package:bulletin_board/pages/board.dart';
@@ -12,8 +12,8 @@ import 'package:bulletin_board/pages/settings.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeRust(assignRustSignal);
-  final appDocumentDirectory = await getApplicationDocumentsDirectory();
-  Hive.init(appDocumentDirectory.path);
+  final currentDir = Directory.current.path;
+  Hive.init(currentDir);
   await Hive.openBox('settings');
   final settings = Hive.box('settings');
   ReqSetAddr(address: settings.get('serverAddress') ?? '127.0.0.1:7578')

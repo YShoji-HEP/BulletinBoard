@@ -5,7 +5,7 @@
 [!["Github Sponsors"](https://img.shields.io/badge/GitHub-Sponsors-red?style=flat-square)](https://github.com/sponsors/YShoji-HEP)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/YShoji-HEP/BulletinBoard/blob/main/LICENSE.txt)
 
-GUI for `BulletinBoard`. 
+GUI application for `BulletinBoard`. 
 
 <img src="snapshot.png" width="500">
 
@@ -15,6 +15,8 @@ GUI for `BulletinBoard`.
 * Various operations of the server via GUI.
 
 ## Compilation (Rinf)
+
+The pre-compiled binaries are available in [Release](https://github.com/YShoji-HEP/BulletinBoard/releases). If you want to build them yourself, follow the instruction below.
 
 This project leverages Flutter for GUI and Rust for the backend logic,
 utilizing the capabilities of the

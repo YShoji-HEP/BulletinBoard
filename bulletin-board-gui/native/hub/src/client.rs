@@ -14,16 +14,31 @@ pub async fn set_addr() {
     }
 }
 
+pub async fn built_in_server_status() {
+    let receiver = ReqBuiltInServerStatus::get_dart_signal_receiver();
+    while let Some(_) = receiver.recv().await {
+        let handle = SERVER.lock().unwrap();
+        ResBuiltInServerStatus {
+            started: !handle.is_none(),
+        }
+        .send_signal_to_dart();
+    }
+}
+
 pub async fn start_server() {
     let receiver = ReqStartServer::get_dart_signal_receiver();
     while let Some(req) = receiver.recv().await {
         let mut handle = SERVER.lock().unwrap();
         if handle.is_none() {
             let addr = req.message.address;
+            let dir = req.message.directory;
 
             *handle = Some(thread::spawn(move || {
                 let mut opt = ServerOptions::new();
                 opt.set_listen_addr(addr);
+                opt.set_tmp_dir(format!("{dir}/tmp"));
+                opt.set_acv_dir(format!("{dir}/acv"));
+                opt.set_log_file(format!("{dir}/bulletin-board.log"));
                 opt.load_options();
                 let mut server = BBServer::new().unwrap();
                 server.listen().unwrap();
@@ -215,26 +230,26 @@ pub async fn terminate_server() {
     }
 }
 
-pub async fn key_input() {
-    use enigo::*;
-    let receiver = ReqKeyInput::get_dart_signal_receiver();
-    while let Some(req) = receiver.recv().await {
-        let mut enigo = Enigo::new(&enigo::Settings::default()).unwrap();
-        #[cfg(target_family = "unix")]
-        {
-            enigo.key(Key::Meta, Direction::Press).unwrap();
-            enigo.key(Key::Tab, Direction::Click).unwrap();
-            enigo.key(Key::Meta, Direction::Release).unwrap();
-        }
-        #[cfg(target_family = "windows")]
-        {
-            enigo.key(Key::Alt, Direction::Press).unwrap();
-            enigo.key(Key::Shift, Direction::Press).unwrap();
-            enigo.key(Key::Tab, Direction::Click).unwrap();
-            enigo.key(Key::Shift, Direction::Release).unwrap();
-            enigo.key(Key::Alt, Direction::Release).unwrap();
-        }
-        std::thread::sleep(std::time::Duration::from_millis(10));
-        enigo.text(&req.message.text).unwrap();
-    }
-}
+// pub async fn key_input() {
+//     use enigo::*;
+//     let receiver = ReqKeyInput::get_dart_signal_receiver();
+//     while let Some(req) = receiver.recv().await {
+//         let mut enigo = Enigo::new(&enigo::Settings::default()).unwrap();
+//         #[cfg(target_family = "unix")]
+//         {
+//             enigo.key(Key::Meta, Direction::Press).unwrap();
+//             enigo.key(Key::Tab, Direction::Click).unwrap();
+//             enigo.key(Key::Meta, Direction::Release).unwrap();
+//         }
+//         #[cfg(target_family = "windows")]
+//         {
+//             enigo.key(Key::Alt, Direction::Press).unwrap();
+//             enigo.key(Key::Shift, Direction::Press).unwrap();
+//             enigo.key(Key::Tab, Direction::Click).unwrap();
+//             enigo.key(Key::Shift, Direction::Release).unwrap();
+//             enigo.key(Key::Alt, Direction::Release).unwrap();
+//         }
+//         std::thread::sleep(std::time::Duration::from_millis(10));
+//         enigo.text(&req.message.text).unwrap();
+//     }
+// }

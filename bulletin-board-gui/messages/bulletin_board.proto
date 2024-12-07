@@ -26,10 +26,14 @@ message ResBulletinInfo {
 // [DART-SIGNAL]
 message ReqStartServer {
     string address = 1;
+    string directory = 2;
 }
 
 // [DART-SIGNAL]
 message ReqStopServer {}
+
+// [DART-SIGNAL]
+message ReqBuiltInServerStatus {}
 
 // [DART-SIGNAL]
 message ReqSetAddr {
@@ -110,14 +114,18 @@ message ReqReset {}
 // [DART-SIGNAL]
 message ReqExit {}
 
-// [DART-SIGNAL]
-message ReqKeyInput {
-    string text = 1;
-}
+//message ReqKeyInput {
+//    string text = 1;
+//}
 
 /////////////////
 // Response
 /////////////////
+
+// [RUST-SIGNAL]
+message ResBuiltInServerStatus {
+    bool started = 1;
+}
 
 // [RUST-SIGNAL]
 message ResStatus {

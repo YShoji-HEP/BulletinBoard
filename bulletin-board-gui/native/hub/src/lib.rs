@@ -17,11 +17,10 @@ async fn main() {
     // Always use non-blocking async functions like `tokio::fs::File::open`.
     // If you must use blocking code, use `tokio::task::spawn_blocking`
     // or the equivalent provided by your async library.
-    // tokio::spawn(sample_functions::communicate());
-    // bulletin_board_client::set_addr("192.168.30.20:7578");
     tokio::task::spawn(client::set_addr());
     tokio::task::spawn(client::start_server());
     tokio::task::spawn(client::stop_server());
+    tokio::task::spawn(client::built_in_server_status());
     tokio::task::spawn(client::relabel());
     tokio::task::spawn(client::status());
     tokio::task::spawn(client::log());
@@ -38,7 +37,7 @@ async fn main() {
     tokio::task::spawn(client::clear_log());
     tokio::task::spawn(client::reset_server());
     tokio::task::spawn(client::terminate_server());
-    tokio::task::spawn(client::key_input());
+    // tokio::task::spawn(client::key_input());
 
     // Keep the main function running until Dart shutdown.
     rinf::dart_shutdown().await;

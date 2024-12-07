@@ -33,3 +33,9 @@ pub enum Response {
     NotFound,
     NotUnique(Vec<String>),
 }
+
+impl Default for Response {
+    fn default() -> Self {
+        Response::Ok
+    }
+}

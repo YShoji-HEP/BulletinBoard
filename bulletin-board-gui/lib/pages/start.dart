@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,31 +88,7 @@ class StartPage extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Tooltip(
-                      message: "Start",
-                      child: OutlinedButton(
-                        onPressed: () {
-                          ReqStartServer(address: listenAddress)
-                              .sendSignalToRust();
-                        },
-                        child: const Icon(Icons.play_arrow),
-                      )),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Tooltip(
-                      message: "Stop",
-                      child: OutlinedButton(
-                        onPressed: () {
-                          ReqStopServer().sendSignalToRust();
-                        },
-                        child: const Icon(Icons.stop),
-                      )),
-                ],
-              ),
+              BuiltInServerControl(listenAddress: listenAddress),
               const SizedBox(
                 height: 30,
               ),
@@ -167,5 +144,49 @@ class StartPage extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class BuiltInServerControl extends StatelessWidget {
+  const BuiltInServerControl({
+    super.key,
+    required this.listenAddress,
+  });
+
+  final dynamic listenAddress;
+
+  @override
+  Widget build(BuildContext context) {
+    ReqBuiltInServerStatus().sendSignalToRust();
+    return StreamBuilder(
+        stream: ResBuiltInServerStatus.rustSignalStream,
+        builder: (context, snapshot) {
+          final received = snapshot.data;
+          final bool started;
+          if (received == null) {
+            started = true;
+          } else {
+            started = received.message.started;
+          }
+          return Tooltip(
+              message: started ? "Stop" : "Start",
+              child: OutlinedButton(
+                onPressed: () {
+                  if (started) {
+                    ReqStopServer().sendSignalToRust();
+                  } else {
+                    ReqStartServer(
+                            address: listenAddress,
+                            directory: Directory.current.path)
+                        .sendSignalToRust();
+                  }
+                  sleep(const Duration(milliseconds: 10));
+                  ReqBuiltInServerStatus().sendSignalToRust();
+                },
+                child: started
+                    ? const Icon(Icons.stop)
+                    : const Icon(Icons.play_arrow),
+              ));
+        });
   }
 }

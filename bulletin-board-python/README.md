@@ -35,6 +35,9 @@ bbclient.read("test")
 ```
 
 ## Compilation
+
+Instead of installing via pip, you can compile the source yourself.
+
 This crate depends on python packages of `numpy` and `maturin`.
 
 First, you need to clone the repository:

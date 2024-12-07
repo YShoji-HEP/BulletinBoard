@@ -59,7 +59,7 @@ See the docs for the details of functions.
 
 |Variable|Default|Description|
 |-|-|-|
-|BB_ADDR|"127.0.0.1:7578" or "/tmp/bb.sock"|Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. If you use a Unix socket, the address should be the path to an uncreated socket. The address can be modified later by calling `set_addr(...)`.|
+|BB_ADDR|"127.0.0.1:7578"|Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. If you use a Unix socket, the address should be the path to an uncreated socket. The address can be modified later by calling `set_addr(...)`.|
 
 
 ## Crate Features
@@ -69,3 +69,4 @@ See the docs for the details of functions.
 |`ndarray_15`|Enable ndarray support. The compatible version is 0.15.x.|
 |`ndarray_16`|Enable ndarray support. The compatible version is 0.16.x.|
 |`nalgebra`|Enable nalgebra support. Confirmed to work with version 0.33.0.|
+|`dry_run`|Skip all communication with the server.|

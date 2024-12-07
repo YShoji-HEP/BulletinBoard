@@ -22,11 +22,16 @@ The package can be installed via [Paclet repository](https://resources.wolframcl
 ```bash
 PacletInstall["Yshojihep/BulletinBoardClient"]
 ```
+For the first run, you need to compile the library. Run
+```bash
+<< "Yshojihep`BulletinBoardClient`";
+```
+and follow the instruction.
 
 ## Example
 
 To post and read the bulletins, 
-```python
+```bash
 << "Yshojihep`BulletinBoardClient`";
 BBSetAddr["192.168.0.3:7578"];
 
@@ -34,6 +39,8 @@ BBPost["test",{1,2,3}];
 BBRead["test"]
 ```
 ## Compilation
+
+Instead of installing via Paclet, you can compile the source yourself.
 
 First, you need to clone the repository:
 ```bash

@@ -1,73 +1,98 @@
+#[cfg(not(feature = "dry_run"))]
 use crate::ADDR;
+
 use bulletin_board_common::*;
 use serde::de::DeserializeOwned;
 use serde_bytes::ByteBuf;
-use std::io::{self, Cursor};
-use std::net::TcpStream;
 
-#[cfg(target_family = "unix")]
+#[cfg(not(feature = "dry_run"))]
+use std::io;
+
+use std::io::Cursor;
+
+#[cfg(not(feature = "dry_run"))]
+use std::net::{TcpStream, ToSocketAddrs};
+
+#[cfg(all(target_family = "unix", not(feature = "dry_run")))]
 use std::os::unix::net::UnixStream;
 
-#[cfg(not(target_family = "unix"))]
-pub enum TcpOrUnixStream {
-    TCP(TcpStream),
-}
-
 /// Abstraction of stream and a set of control functions.
-#[cfg(target_family = "unix")]
+#[cfg(not(feature = "dry_run"))]
 pub enum TcpOrUnixStream {
     TCP(TcpStream),
+    #[cfg(target_family = "unix")]
     Unix(UnixStream),
 }
+
+#[cfg(feature = "dry_run")]
+pub struct TcpOrUnixStream;
 
 impl TcpOrUnixStream {
     /// Open a TCP/UNIX socket. This blocks the server until the instance is dropped.
     pub fn connect() -> Result<Self, Box<dyn std::error::Error>> {
+        #[cfg(not(feature = "dry_run"))]
         let addr = ADDR.lock().unwrap().clone();
-        #[cfg(target_family = "unix")]
+
+        #[cfg(all(target_family = "unix", not(feature = "dry_run")))]
         let stream = {
-            let re = regex::Regex::new(":[0-9]+$").unwrap();
-            if re.is_match(&addr) {
+            let ip = addr.to_socket_addrs();
+            if ip.is_ok() {
                 TcpOrUnixStream::TCP(TcpStream::connect(&addr)?)
-            } else {
+            } else if !addr.contains(":") {
                 TcpOrUnixStream::Unix(UnixStream::connect(&addr)?)
+            } else {
+                return Err(Box::new(io::Error::new(
+                    io::ErrorKind::AddrNotAvailable,
+                    "Address is invalid or not available.",
+                )));
             }
         };
-        #[cfg(not(target_family = "unix"))]
-        let stream = TcpOrUnixStream::TCP(TcpStream::connect(&addr)?);
+
+        #[cfg(all(not(target_family = "unix"), not(feature = "dry_run")))]
+        let stream = {
+            let ip = addr.to_socket_addrs();
+            if ip.is_ok() {
+                TcpOrUnixStream::TCP(TcpStream::connect(&addr)?);
+            } else {
+                return Err(Box::new(io::Error::new(
+                    io::ErrorKind::AddrNotAvailable,
+                    "Address is invalid or not available.",
+                )));
+            }
+        };
+
+        #[cfg(feature = "dry_run")]
+        let stream = TcpOrUnixStream;
+
         Ok(stream)
     }
 
     fn send(&mut self, mut buffer: Cursor<Vec<u8>>) -> Result<(), Box<dyn std::error::Error>> {
         buffer.set_position(0);
-        #[cfg(target_family = "unix")]
+        #[cfg(not(feature = "dry_run"))]
         match self {
             TcpOrUnixStream::TCP(stream) => {
                 io::copy(&mut buffer, stream)?;
             }
+            #[cfg(target_family = "unix")]
             TcpOrUnixStream::Unix(stream) => {
                 io::copy(&mut buffer, stream)?;
             }
         }
-        #[cfg(not(target_family = "unix"))]
-        match self {
-            TcpOrUnixStream::TCP(stream) => {
-                io::copy(&mut buffer, stream)?;
-            }
-        }
+
         Ok(())
     }
 
-    fn receive<T: DeserializeOwned>(&mut self) -> Result<T, Box<dyn std::error::Error>> {
-        #[cfg(target_family = "unix")]
+    fn receive<T: DeserializeOwned + Default>(&mut self) -> Result<T, Box<dyn std::error::Error>> {
+        #[cfg(not(feature = "dry_run"))]
         match self {
             TcpOrUnixStream::TCP(stream) => Ok(ciborium::from_reader(stream)?),
+            #[cfg(target_family = "unix")]
             TcpOrUnixStream::Unix(stream) => Ok(ciborium::from_reader(stream)?),
         }
-        #[cfg(not(target_family = "unix"))]
-        match self {
-            TcpOrUnixStream::TCP(stream) => Ok(ciborium::from_reader(stream)?),
-        }
+
+        #[cfg(feature = "dry_run")]
+        Ok(Default::default())
     }
 
     /// Posts binary of ArrayObject.

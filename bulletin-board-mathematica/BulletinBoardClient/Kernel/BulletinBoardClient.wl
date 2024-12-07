@@ -45,6 +45,7 @@ libraryName=Switch[$OperatingSystem,"MacOSX","libbulletin_board_mathematica.dyli
 
 libraryPath=FileNameJoin[{libraryDir,libraryName}];
 
+
 loadFuncitons:=Module[{lib,loader},
 	lib=LibraryFunctionLoad[libraryPath,"load_dbgbb",LinkObject,LinkObject];
 	loader=lib[libraryPath];
@@ -85,13 +86,20 @@ CADirSuggest=FileNameJoin[{$InstallationDirectory, "SystemFiles", "Links", "WSTP
 If[FileExistsQ[libraryPath],
 	loadFuncitons;
 	Print["BulletinBoardClient loaded. Client version: "<>BBClientVersion[]];,
-	Print["The BulletinBoardClient library does not exist. To compile, run BBBuildLibrary[].
-For compilation, a standard C++ build environment is required.
+	Print["The BulletinBoardClient library does not exist. To compile it, please follow the instruction below.
 
-The wolfram-app-discovery crate often fails to find the WSTP CompilerAddtions directory, which is typically located at \""<>CADirSuggest<>"\". The directory can be set by
+1. A standard C++ build environment is required. Install it following instructions available on the Internet.
+2. If you have already installed a Rust toolchain and the cargo-clone crate, run BBBuildLibrary[\"CompilerAdditionsDirectory\"->\"dir/to/CompilerAdditions\"].
+   If you do not and would prefer not to install Rust in your environment, run BBBuildLibrary[\"DownloadRust\"->True,\"CompilerAdditionsDirectory\"->\"dir/to/CompilerAdditions\"].
+   Then, the toolchain will be downloaded in the Paclet directory.
+3. If it does not compile, refer to the log and install any missing libraries.
+
+* You can manually download the source from crates.io or GitHub, and build the library. Then, copy the compiled library to "<>libraryDir<>".
+
+* The wolfram-app-discovery crate often fails to find the WSTP CompilerAddtions directory, which is typically located at \""<>CADirSuggest<>"\". The directory can be set by
 BBBuildLibrary[\"CompilerAdditionsDirectory\"->\"dir/to/CompilerAdditions\"]
 
-The version of client can be set by
+* The version of client can be set by
 BBBuildLibrary[\"ClientVersion\"->\"0.3.1\"]
 Notice that this paclet is compatible with 0.3.1+."
 	];
@@ -101,38 +109,63 @@ Notice that this paclet is compatible with 0.3.1+."
 BBBuildLibrary[opt___]:=If[$OperatingSystem=="Windows",BBBuildLibraryWindows[opt],BBBuildLibraryUnix[opt]]
 
 
-Options[BBBuildLibraryUnix]={"CompilerAdditionsDirectory"->None,"ClientVersion"->None};
-BBBuildLibraryUnix[OptionsPattern[]]:=Module[{env,installRustCommand,installCloneCommand,cloneClientCommand,installClientCommand,CompilerAdditionsDirectory=OptionValue["CompilerAdditionsDirectory"],ClientVersion=OptionValue["ClientVersion"]},
-	env="RUSTUP_HOME="<>libraryDir<>"/rustup CARGO_HOME="<>libraryDir<>"/cargo ";
-	installRustCommand="curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs |"<>env<>"sh -s -- -y --profile minimal --no-modify-path";
-	Print[installRustCommand];Print[ExternalEvaluate["Shell",installRustCommand]];
-	installCloneCommand=env<>libraryDir<>"/cargo/bin/cargo install cargo-clone";
-	Print[installCloneCommand];Print[ExternalEvaluate["Shell",installCloneCommand]];
-	cloneClientCommand=env<>libraryDir<>"/cargo/bin/cargo clone bulletin-board-mathematica"<>If[ClientVersion===None,"","@"<>ClientVersion]<>" -- "<>libraryDir<>"/bulletin-board-mathematica";
-	Print[cloneClientCommand];Print[ExternalEvaluate["Shell",cloneClientCommand]];
-	installClientCommand=env<>If[CompilerAdditionsDirectory===None,"","WSTP_COMPILER_ADDITIONS_DIRECTORY=\""<>CompilerAdditionsDirectory<>"\" "]<>libraryDir<>"/cargo/bin/cargo build -r --manifest-path "<>libraryDir<>"/bulletin-board-mathematica/Cargo.toml";
-	Print[installClientCommand];Print[ExternalEvaluate["Shell",installClientCommand]];
+Options[BBBuildLibraryUnix]={"CompilerAdditionsDirectory"->None,"ClientVersion"->None,"DownloadRust"->False};
+
+BBBuildLibraryUnix[OptionsPattern[]]:=Module[{prolog,cargo,installRustCommand,installCloneCommand,cloneClientCommand,buildClientCommand,compilerAdditionsDirectory=OptionValue["CompilerAdditionsDirectory"],ClientVersion=OptionValue["ClientVersion"],DownloadRust=OptionValue["DownloadRust"]},
+	prolog=If[DownloadRust,"export RUSTUP_HOME="<>libraryDir<>"/rustup CARGO_HOME="<>libraryDir<>"/cargo ","export RUSTUP_HOME=~/.rustup CARGO_HOME=~/.cargo "]<>If[compilerAdditionsDirectory===None,"","WSTP_COMPILER_ADDITIONS_DIRECTORY=\""<>compilerAdditionsDirectory<>"\" "];
+	cargo=If[DownloadRust,libraryDir<>"/cargo/bin/cargo ","~/.cargo/bin/cargo "];
+
+	If[!DirectoryQ[libraryDir],CreateDirectory[libraryDir]];
+
+	If[DownloadRust,
+		installRustCommand="curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --no-modify-path";
+		Print[installRustCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog},installRustCommand]];
+		installCloneCommand=libraryDir<>"/cargo/bin/cargo install cargo-clone";
+		Print[installCloneCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog},installCloneCommand]];
+	];
+
+	cloneClientCommand=cargo<>"clone bulletin-board-mathematica"<>If[ClientVersion===None,"","@"<>ClientVersion]<>" -- "<>libraryDir<>"/bulletin-board-mathematica";
+	Print[cloneClientCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog},cloneClientCommand]];
+
+	buildClientCommand=cargo<>"build -r --manifest-path "<>libraryDir<>"/bulletin-board-mathematica/Cargo.toml";
+	Print[buildClientCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog},buildClientCommand]];
+
 	CopyFile[FileNameJoin[{libraryDir,"bulletin-board-mathematica/target/release",libraryName}],libraryPath];
+
 	DeleteDirectory[libraryDir<>"/bulletin-board-mathematica",DeleteContents->True];
+
 	loadFuncitons
 ]
 
 
-Options[BBBuildLibraryWindows]={"CompilerAdditionsDirectory"->None,"ClientVersion"->None};
-BBBuildLibraryWindows[OptionsPattern[]]:=Module[{env,installRustCommand,installCloneCommand,cloneClientCommand,installClientCommand,CompilerAdditionsDirectory=OptionValue["CompilerAdditionsDirectory"],ClientVersion=OptionValue["ClientVersion"]},
-	env="powershell -command \"$Env:RUSTUP_HOME=\\\""<>libraryDir<>"\\rustup\\\"; $Env:CARGO_HOME=\\\""<>libraryDir<>"\\cargo\\\"; ";
+Options[BBBuildLibraryWindows]={"CompilerAdditionsDirectory"->None,"ClientVersion"->None,"DownloadRust"->False};
+
+BBBuildLibraryWindows[OptionsPattern[]]:=Module[{prolog,cargo,powerShell,installRustCommand,installCloneCommand,cloneClientCommand,buildClientCommand,CompilerAdditionsDirectory=OptionValue["CompilerAdditionsDirectory"],ClientVersion=OptionValue["ClientVersion"],DownloadRust=OptionValue["DownloadRust"]},
+	powerShell=FileNameJoin[{Environment["SystemRoot"], "system32", 
+     "WindowsPowerShell", "v1.0", "powershell.exe"}];
+	prolog=If[DownloadRust,"$Env:RUSTUP_HOME=\\\""<>libraryDir<>"\\rustup\\\"; $Env:CARGO_HOME=\\\""<>libraryDir<>"\\cargo\\\"; ","$Env:RUSTUP_HOME=\\\"~\\.rustup\\\"; $Env:CARGO_HOME=\\\"~\\.cargo\\\"; "]<>If[CompilerAdditionsDirectory===None,"","$Env:WSTP_COMPILER_ADDITIONS_DIRECTORY=\\\""<>CompilerAdditionsDirectory<>"\\\"; "];
+	cargo=If[DownloadRust,env<>libraryDir<>"\\cargo\\bin\\cargo ","~\\.cargo\\bin\\cargo "];
+
 	If[!DirectoryQ[libraryDir],CreateDirectory[libraryDir]];
-	URLDownload["https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe",FileNameJoin[{libraryDir,"rustup-init.exe"}]];
-	installRustCommand=env<>libraryDir<>"\\rustup-init.exe -y --profile minimal --no-modify-path\"";
-	Print[installRustCommand];Print[ExternalEvaluate["Shell",installRustCommand]];
-	installCloneCommand=env<>libraryDir<>"\\cargo\\bin\\cargo install cargo-clone\"";
-	Print[installCloneCommand];Print[ExternalEvaluate["Shell",installCloneCommand]];
-	cloneClientCommand=env<>libraryDir<>"\\cargo\\bin\\cargo clone bulletin-board-mathematica"<>If[ClientVersion===None,"","@"<>ClientVersion]<>" -- "<>libraryDir<>"\\bulletin-board-mathematica\"";
-	Print[cloneClientCommand];Print[ExternalEvaluate["Shell",cloneClientCommand]];
-	installClientCommand=env<>If[CompilerAdditionsDirectory===None,"","$Env:WSTP_COMPILER_ADDITIONS_DIRECTORY=\\\""<>CompilerAdditionsDirectory<>"\\\"; "]<>libraryDir<>"\\cargo\\bin\\cargo build -r --manifest-path "<>libraryDir<>"\\bulletin-board-mathematica\\Cargo.toml\"";
-	Print[installClientCommand];Print[ExternalEvaluate["Shell",installClientCommand]];
+
+	If[DownloadRust,
+		URLDownload["https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe",FileNameJoin[{libraryDir,"rustup-init.exe"}]];
+		installRustCommand=libraryDir<>"\\rustup-init.exe -y --profile minimal --no-modify-path";
+		Print[installRustCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog,"Evaluator"->powerShell},installRustCommand]];
+		installCloneCommand=libraryDir<>"\\cargo\\bin\\cargo install cargo-clone";
+		Print[installCloneCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog,"Evaluator"->powerShell},installCloneCommand]];
+	];
+
+	cloneClientCommand=cargo<>"clone bulletin-board-mathematica"<>If[ClientVersion===None,"","@"<>ClientVersion]<>" -- "<>libraryDir<>"\\bulletin-board-mathematica";
+	Print[cloneClientCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog,"Evaluator"->powerShell},cloneClientCommand]];
+
+	buildClientCommand=cargo<>"build -r --manifest-path "<>libraryDir<>"\\bulletin-board-mathematica\\Cargo.toml";
+	Print[buildClientCommand];Print[ExternalEvaluate[{"Shell","SessionProlog"->prolog,"Evaluator"->powerShell},buildClientCommand]];
+
 	CopyFile[FileNameJoin[{libraryDir,"bulletin-board-mathematica\\target\\release",libraryName}],libraryPath];
+
 	DeleteDirectory[libraryDir<>"\\bulletin-board-mathematica",DeleteContents->True];
+
 	loadFuncitons
 ]
 

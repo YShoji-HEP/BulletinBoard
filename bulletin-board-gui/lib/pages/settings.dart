@@ -20,8 +20,8 @@ class _SettingsPageState extends State<SettingsPage> {
     bool copyFull = settings.get('copyFull') ?? false;
     final targetLanguage =
         TargetLanguage.values[settings.get('targetLanguage') ?? 0];
-    final clickAction =
-        BoardClickAction.values[settings.get('boardClickAction') ?? 0];
+    // final clickAction =
+    //     BoardClickAction.values[settings.get('boardClickAction') ?? 0];
     final pythonAlias =
         TextEditingController(text: settings.get('pythonAlias') ?? '');
     final serverAddress =
@@ -223,29 +223,29 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(
             height: 10,
           ),
-          Text('Click action:', style: sectionStyle),
-          RadioListTile<BoardClickAction>(
-            title: const Text('Clipboard'),
-            subtitle: const Text('Copy to clipboard.'),
-            value: BoardClickAction.clipboard,
-            groupValue: clickAction,
-            onChanged: (value) => {
-              setState(() {
-                settings.put('boardClickAction', value?.index);
-              })
-            },
-          ),
-          RadioListTile<BoardClickAction>(
-            title: const Text('Palette (experimental)'),
-            subtitle: const Text('Directly input via a simulated keyboard.'),
-            value: BoardClickAction.palette,
-            groupValue: clickAction,
-            onChanged: (value) => {
-              setState(() {
-                settings.put('boardClickAction', value?.index);
-              })
-            },
-          ),
+          // Text('Click action:', style: sectionStyle),
+          // RadioListTile<BoardClickAction>(
+          //   title: const Text('Clipboard'),
+          //   subtitle: const Text('Copy to clipboard.'),
+          //   value: BoardClickAction.clipboard,
+          //   groupValue: clickAction,
+          //   onChanged: (value) => {
+          //     setState(() {
+          //       settings.put('boardClickAction', value?.index);
+          //     })
+          //   },
+          // ),
+          // RadioListTile<BoardClickAction>(
+          //   title: const Text('Palette (experimental)'),
+          //   subtitle: const Text('Directly input via a simulated keyboard.'),
+          //   value: BoardClickAction.palette,
+          //   groupValue: clickAction,
+          //   onChanged: (value) => {
+          //     setState(() {
+          //       settings.put('boardClickAction', value?.index);
+          //     })
+          //   },
+          // ),
           Text('Copy mode:', style: sectionStyle),
           RadioListTile<bool>(
             title: const Text('Minimal expression'),

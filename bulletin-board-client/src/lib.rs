@@ -41,6 +41,8 @@ static ADDR: LazyLock<Mutex<String>> = LazyLock::new(|| {
 });
 
 /// Sets the server address.
+/// 
+/// Valid formats are "address:port" and "path/to/socket".
 pub fn set_addr(new_addr: &str) {
     let mut addr = ADDR.lock().unwrap();
     *addr = new_addr.to_string();

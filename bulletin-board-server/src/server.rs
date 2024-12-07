@@ -16,6 +16,7 @@ use serde_bytes::ByteBuf;
 use std::env;
 use std::fs;
 use std::io;
+use std::net::ToSocketAddrs;
 use std::path::Path;
 use std::sync::LazyLock;
 
@@ -119,15 +120,29 @@ impl BBServer {
         })
     }
     pub fn listen(&mut self) -> Result<(), std::io::Error> {
+        let ip = LISTEN_ADDR.to_socket_addrs();
         #[cfg(not(target_family = "unix"))]
-        self.listen_tcp()?;
-        #[cfg(target_family = "unix")]
         {
-            let re = regex::Regex::new(":[0-9]+$").unwrap();
-            if re.is_match(&*LISTEN_ADDR) {
+            if ip.is_ok() {
                 self.listen_tcp()?;
             } else {
+                return Err(io::Error::new(
+                    io::ErrorKind::AddrNotAvailable,
+                    "Address is invalid or not available.",
+                ));
+            }
+        }
+        #[cfg(target_family = "unix")]
+        {
+            if ip.is_ok() {
+                self.listen_tcp()?;
+            } else if !LISTEN_ADDR.contains(":") {
                 self.listen_unix()?;
+            } else {
+                return Err(io::Error::new(
+                    io::ErrorKind::AddrNotAvailable,
+                    "Address is invalid or not available.",
+                ));
             }
         }
         Ok(())
@@ -254,9 +269,10 @@ impl BBServer {
                 }
                 Operation::Terminate => {
                     self.reset()?;
-                    let re = regex::Regex::new(":[0-9]+$").unwrap();
-                    if !re.is_match(&*LISTEN_ADDR) && std::path::Path::new(&*LISTEN_ADDR).exists() {
-                        std::fs::remove_file(&*LISTEN_ADDR)?;
+                    if !LISTEN_ADDR.to_socket_addrs().is_ok() {
+                        if std::path::Path::new(&*LISTEN_ADDR).exists() {
+                            std::fs::remove_file(&*LISTEN_ADDR)?;
+                        }
                     }
                     return Ok(true);
                 }

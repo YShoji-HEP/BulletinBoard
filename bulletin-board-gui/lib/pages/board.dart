@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:popover/popover.dart';
 import 'package:collection/collection.dart';
 import 'package:fixnum/fixnum.dart';
+import 'package:human_file_size/human_file_size.dart';
 import 'package:bulletin_board/common/enums.dart';
 import 'package:bulletin_board/messages/all.dart';
 
@@ -138,8 +140,8 @@ class BulletinItem extends StatelessWidget {
     final settings = Hive.box('settings');
     final targetLanguage =
         TargetLanguage.values[settings.get('targetLanguage') ?? 0];
-    final clickAction =
-        BoardClickAction.values[settings.get('boardClickAction') ?? 0];
+    // final clickAction =
+    //     BoardClickAction.values[settings.get('boardClickAction') ?? 0];
     bool copyFull = settings.get('copyFull') ?? false;
     var pythonAlias = settings.get('pythonAlias') ?? '';
     if (pythonAlias == '') {
@@ -192,11 +194,12 @@ class BulletinItem extends StatelessWidget {
                   }
               }
             }
-            if (clickAction == BoardClickAction.clipboard) {
-              Clipboard.setData(ClipboardData(text: text));
-            } else {
-              ReqKeyInput(text: text).sendSignalToRust();
-            }
+            Clipboard.setData(ClipboardData(text: text));
+            // if (clickAction == BoardClickAction.clipboard) {
+            //   Clipboard.setData(ClipboardData(text: text));
+            // } else {
+            //   ReqKeyInput(text: text).sendSignalToRust();
+            // }
           },
           onSecondaryTap: () => showPopover(
               direction: PopoverDirection.bottom,
@@ -315,9 +318,10 @@ class BulletinInfo extends StatelessWidget {
           table = [];
         } else {
           table = received.message.info.map((i) {
+            final datasize = humanFileSize(i.datasize.toInt());
             return DataRow(cells: [
               DataCell(Text('${i.revision}')),
-              DataCell(Text('${i.datasize}')),
+              DataCell(Text(datasize)),
               DataCell(Text(i.timestamp)),
               DataCell(Text(i.backend)),
             ]);
@@ -343,7 +347,7 @@ class BulletinInfo extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     child: DataTable(columns: const [
                       DataColumn(label: Text('Revision number')),
-                      DataColumn(label: Text('Data size (B)')),
+                      DataColumn(label: Text('Data size')),
                       DataColumn(label: Text('Timestamp')),
                       DataColumn(label: Text('Backend')),
                     ], rows: table),
@@ -408,9 +412,10 @@ class BulletinRelabel extends StatelessWidget {
                           titleTo: newTitle.text,
                           tagTo: newTag.text)
                       .sendSignalToRust();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  sleep(const Duration(milliseconds: 10));
                   ReqViewBoard().sendSignalToRust();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
                 }
               },
               child: const Text('Ok')),
@@ -461,9 +466,10 @@ class BulletinArchive extends StatelessWidget {
                     title: title,
                     tag: tag,
                   ).sendSignalToRust();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  sleep(const Duration(milliseconds: 10));
                   ReqViewBoard().sendSignalToRust();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
                 }
               },
               child: const Text('Ok')),
@@ -500,9 +506,10 @@ class BulletinRemove extends StatelessWidget {
               onPressed: () {
                 {
                   ReqRemove(title: title, tag: tag).sendSignalToRust();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  sleep(const Duration(milliseconds: 10));
                   ReqViewBoard().sendSignalToRust();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
                 }
               },
               child: const Text('Ok')),
@@ -593,14 +600,20 @@ class BoardController extends StatelessWidget {
             onPressed: () => showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                        title: const Text('Archive'),
-                        content: const Text('Choose a name of the archive.'),
+                        title: const Text('Dump'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                                'Choose a name of the archive for the bulletin.'),
+                            TextField(
+                              decoration: const InputDecoration(
+                                  hintText: 'Archive name'),
+                              controller: archiveName,
+                            ),
+                          ],
+                        ),
                         actions: [
-                          TextField(
-                            decoration:
-                                const InputDecoration(hintText: 'Archive name'),
-                            controller: archiveName,
-                          ),
                           TextButton(
                               onPressed: () {
                                 {
@@ -614,8 +627,9 @@ class BoardController extends StatelessWidget {
                                   ReqDump(
                                     acvName: archiveName.text,
                                   ).sendSignalToRust();
-                                  ReqViewBoard().sendSignalToRust();
                                   Navigator.pop(context);
+                                  sleep(const Duration(milliseconds: 10));
+                                  ReqViewBoard().sendSignalToRust();
                                 }
                               },
                               child: const Text('Ok')),
@@ -643,8 +657,9 @@ class BoardController extends StatelessWidget {
                               onPressed: () {
                                 {
                                   ReqReset().sendSignalToRust();
-                                  ReqViewBoard().sendSignalToRust();
                                   Navigator.pop(context);
+                                  sleep(const Duration(milliseconds: 10));
+                                  ReqViewBoard().sendSignalToRust();
                                 }
                               },
                               child: const Text('Ok')),

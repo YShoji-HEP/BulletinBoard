@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:bulletin_board/messages/all.dart';
@@ -333,8 +334,9 @@ class ArchiveController extends StatelessWidget {
                               onPressed: () {
                                 {
                                   ReqReset().sendSignalToRust();
-                                  ReqListArchive().sendSignalToRust();
                                   Navigator.pop(context);
+                                  sleep(const Duration(milliseconds: 10));
+                                  ReqListArchive().sendSignalToRust();
                                 }
                               },
                               child: const Text('Ok')),

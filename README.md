@@ -18,7 +18,7 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 * Simple access to data. For example, revision can be omitted. Then, the most recent revision is returned. The tag can also be omitted if no other tags are present.
 * The commands `archive` and `dump` make data persistent. (Data does not persist by default.)
 * Unix sockets can be used with Unix-like operating systems, which makes the communication speed quite fast.
-* GUI application is now available. You can download the binary files from [Release](https://github.com/YShoji-HEP/BulletinBoard/releases).
+* GUI application is available. You can download the binary files from [Release](https://github.com/YShoji-HEP/BulletinBoard/releases).
 
 ## Caution
 
@@ -36,15 +36,11 @@ Object storage for [`ArrayObject`](https://github.com/YShoji-HEP/ArrayObject) fo
 |Mathematica Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-mathematica?style=flat-square)](https://crates.io/crates/bulletin-board-mathematica)|
 |Python Client|[![Crates.io](https://img.shields.io/crates/v/bulletin-board-python?style=flat-square)](https://crates.io/crates/bulletin-board-python)|
 
-## Docker
+## Server
 
-The docker image is available and you can run the server by
-```
-docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board:latest
-```
-For details, see [DockerHub](https://hub.docker.com/r/yshojihep/bulletin-board).
- 
-## Example
+There are several options for running the `BulletinBoard` server.
+
+**Cargo**
 
 Install and run the server with the specified listen address.
 ```bash
@@ -53,7 +49,22 @@ export BB_LISTEN_ADDR = "0.0.0.0:7578"
 bulletin-board-server
 ```
 
-Rust client: (see [`bulletin-board-client`](bulletin-board-client/README.md))
+**Docker**
+
+The docker image is available and you can run the server by
+```
+docker run -p 7578:7578 -v /path/to/vol:/data yshojihep/bulletin-board:latest
+```
+For details, see [DockerHub](https://hub.docker.com/r/yshojihep/bulletin-board).
+
+**GUI**
+
+The GUI app includes a built-in server. The binary file can be downloaded from [Release](https://github.com/YShoji-HEP/BulletinBoard/releases).
+## Client
+
+Currently available clients are listed below.
+
+**Rust client** (see [`bulletin-board-client`](bulletin-board-client/README.md))
 ```rust
 use bulletin_board_client as bbclient;
 use bbclient::*;
@@ -68,7 +79,7 @@ fn main() {
 }
 ```
 
-Mathematica client: (see [`bulletin-board-mathematica`](bulletin-board-mathematica/README.md))
+**Mathematica client** (see [`bulletin-board-mathematica`](bulletin-board-mathematica/README.md))
 ```python
 << "bulletin-board.wl";
 BBSetAddr["192.168.0.3:7578"];
@@ -76,7 +87,7 @@ BBPost["test",{1,2,3}];
 BBRead["test"]
 ```
 
-Python client: (see [`bulletin-board-python`](bulletin-board-python/README.md))
+**Python client** (see [`bulletin-board-python`](bulletin-board-python/README.md))
 ```python
 import bulletin_board_client as bbclient
 bbclient.set_addr("192.168.0.3:7578")

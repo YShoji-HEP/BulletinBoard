@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:human_file_size/human_file_size.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:bulletin_board/messages/all.dart';
 
@@ -39,24 +41,26 @@ class ServerStatus extends StatelessWidget {
         builder: (context, snapshot) {
           final received = snapshot.data;
 
-          final Int64 totalDatasize;
-          final Int64 memoryUsed;
-          final double memoryUsedPercentage;
+          final String totalDatasize;
+          final String memoryUsed;
+          final String memoryUsedPercentage;
           final Int64 bulletins;
           final Int64 files;
           final Int64 archives;
 
           if (received == null) {
-            totalDatasize = Int64.ZERO;
-            memoryUsed = Int64.ZERO;
-            memoryUsedPercentage = 0;
+            totalDatasize = "-";
+            memoryUsed = "-";
+            memoryUsedPercentage = "-";
             bulletins = Int64.ZERO;
             files = Int64.ZERO;
             archives = Int64.ZERO;
           } else {
-            totalDatasize = received.message.totalDatasize;
-            memoryUsed = received.message.memoryUsed;
-            memoryUsedPercentage = received.message.memoryUsedPercentage;
+            totalDatasize =
+                humanFileSize(received.message.totalDatasize.toInt());
+            memoryUsed = humanFileSize(received.message.memoryUsed.toInt());
+            memoryUsedPercentage =
+                '${received.message.memoryUsedPercentage.toStringAsPrecision(3).toString()} %';
             bulletins = received.message.bulletins;
             files = received.message.files;
             archives = received.message.archives;
@@ -89,10 +93,9 @@ class ServerStatus extends StatelessWidget {
                       ],
                       rows: [
                         DataRow(cells: [
-                          DataCell(Text('$totalDatasize B')),
-                          DataCell(Text('$memoryUsed B')),
-                          DataCell(Text(
-                              '${memoryUsedPercentage.toStringAsPrecision(3)} %')),
+                          DataCell(Text(totalDatasize)),
+                          DataCell(Text(memoryUsed)),
+                          DataCell(Text(memoryUsedPercentage)),
                           DataCell(Text('$bulletins')),
                           DataCell(Text('$files')),
                           DataCell(Text('$archives')),
@@ -175,6 +178,7 @@ class ServerController extends StatelessWidget {
             tooltip: 'Clear',
             onPressed: () {
               ReqClearLog().sendSignalToRust();
+              sleep(const Duration(milliseconds: 10));
               ReqLog().sendSignalToRust();
             },
             child: const Icon(Icons.delete),
