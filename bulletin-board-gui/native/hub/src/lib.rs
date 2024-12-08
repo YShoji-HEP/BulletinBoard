@@ -17,6 +17,7 @@ async fn main() {
     // Always use non-blocking async functions like `tokio::fs::File::open`.
     // If you must use blocking code, use `tokio::task::spawn_blocking`
     // or the equivalent provided by your async library.
+    bulletin_board_client::set_timeout(Some(std::time::Duration::from_millis(500)));
     tokio::task::spawn(client::set_addr());
     tokio::task::spawn(client::start_server());
     tokio::task::spawn(client::stop_server());

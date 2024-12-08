@@ -33,19 +33,37 @@ pub mod low_level;
 pub use array_object::{adaptor, ArrayObject, DataType, Pack, Unpack};
 
 use low_level::*;
-use std::sync::{LazyLock, Mutex};
+use std::{
+    sync::{LazyLock, Mutex},
+    time::Duration,
+};
 
 static ADDR: LazyLock<Mutex<String>> = LazyLock::new(|| {
     let addr = std::env::var("BB_ADDR").unwrap_or("127.0.0.1:7578".to_string());
     Mutex::new(addr)
 });
 
+static TIMEOUT: LazyLock<Mutex<Option<Duration>>> = LazyLock::new(|| {
+    let timeout = std::env::var("BB_TIMEOUT").unwrap_or("".to_string());
+    if timeout == "" {
+        Mutex::new(None)
+    } else {
+        Mutex::new(Some(Duration::from_millis(timeout.parse().unwrap())))
+    }
+});
+
 /// Sets the server address.
-/// 
+///
 /// Valid formats are "address:port" and "path/to/socket".
 pub fn set_addr(new_addr: &str) {
     let mut addr = ADDR.lock().unwrap();
     *addr = new_addr.to_string();
+}
+
+/// Sets timeout for TCP stream connect. Setting it to None disable timeout.
+pub fn set_timeout(new_timeout: Option<Duration>) {
+    let mut timeout = TIMEOUT.lock().unwrap();
+    *timeout = new_timeout;
 }
 
 /// Posts an ArrayObject.

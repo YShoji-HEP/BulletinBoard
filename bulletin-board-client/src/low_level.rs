@@ -1,5 +1,5 @@
 #[cfg(not(feature = "dry_run"))]
-use crate::ADDR;
+use crate::{ADDR, TIMEOUT};
 
 use bulletin_board_common::*;
 use serde::de::DeserializeOwned;
@@ -30,14 +30,21 @@ pub struct TcpOrUnixStream;
 impl TcpOrUnixStream {
     /// Open a TCP/UNIX socket. This blocks the server until the instance is dropped.
     pub fn connect() -> Result<Self, Box<dyn std::error::Error>> {
-        #[cfg(not(feature = "dry_run"))]
-        let addr = ADDR.lock().unwrap().clone();
-
         #[cfg(all(target_family = "unix", not(feature = "dry_run")))]
         let stream = {
+            let addr = ADDR.lock().unwrap().clone();
             let ip = addr.to_socket_addrs();
-            if ip.is_ok() {
-                TcpOrUnixStream::TCP(TcpStream::connect(&addr)?)
+            if let Ok(mut iter) = ip {
+                let timeout = TIMEOUT.lock().unwrap().clone();
+                if let Some(t) = timeout {
+                    let mut addr = iter.next().unwrap();
+                    if addr.is_ipv6() {
+                        addr = iter.next().unwrap();
+                    }
+                    TcpOrUnixStream::TCP(TcpStream::connect_timeout(&addr, t)?)
+                } else {
+                    TcpOrUnixStream::TCP(TcpStream::connect(&addr)?)
+                }
             } else if !addr.contains(":") {
                 TcpOrUnixStream::Unix(UnixStream::connect(&addr)?)
             } else {
@@ -50,9 +57,19 @@ impl TcpOrUnixStream {
 
         #[cfg(all(not(target_family = "unix"), not(feature = "dry_run")))]
         let stream = {
+            let addr = ADDR.lock().unwrap().clone();
             let ip = addr.to_socket_addrs();
-            if ip.is_ok() {
-                TcpOrUnixStream::TCP(TcpStream::connect(&addr)?);
+            if let Ok(mut iter) = ip {
+                let timeout = TIMEOUT.lock().unwrap().clone();
+                if let Some(t) = timeout {
+                    let mut addr = iter.next().unwrap();
+                    if addr.is_ipv6() {
+                        addr = iter.next().unwrap();
+                    }
+                    TcpOrUnixStream::TCP(TcpStream::connect_timeout(&addr, t)?)
+                } else {
+                    TcpOrUnixStream::TCP(TcpStream::connect(&addr)?)
+                }
             } else {
                 return Err(Box::new(io::Error::new(
                     io::ErrorKind::AddrNotAvailable,

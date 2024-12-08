@@ -60,6 +60,7 @@ See the docs for the details of functions.
 |Variable|Default|Description|
 |-|-|-|
 |BB_ADDR|"127.0.0.1:7578"|Address of the bulletin board server. It is either [IP address]:[port] or [hostname]:[port]. If you use a Unix socket, the address should be the path to an uncreated socket. The address can be modified later by calling `set_addr(...)`.|
+|BB_TIMEOUT|Unset|Timeout for TCP connection.|
 
 
 ## Crate Features
