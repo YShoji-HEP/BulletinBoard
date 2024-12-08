@@ -5,7 +5,7 @@ PacletObject[
     "Name" -> "Yshojihep/BulletinBoardClient",
     "Description" -> "Mathematica client for BulletinBoard",
     "Creator" -> "YUTARO SHOJI",
-    "Version" -> "1.0.2",
+    "Version" -> "1.0.3",
     "WolframVersion" -> "13.0+",
     "PublisherID" -> "Yshojihep",
     "License" -> "Apache-2.0",

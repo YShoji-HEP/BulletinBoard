@@ -112,7 +112,7 @@ BBBuildLibrary[opt___]:=If[$OperatingSystem=="Windows",BBBuildLibraryWindows[opt
 Options[BBBuildLibraryUnix]={"CompilerAdditionsDirectory"->None,"ClientVersion"->None,"DownloadRust"->False};
 
 BBBuildLibraryUnix[OptionsPattern[]]:=Module[{prolog,cargo,installRustCommand,installCloneCommand,cloneClientCommand,buildClientCommand,compilerAdditionsDirectory=OptionValue["CompilerAdditionsDirectory"],ClientVersion=OptionValue["ClientVersion"],DownloadRust=OptionValue["DownloadRust"]},
-	prolog=If[DownloadRust,"export RUSTUP_HOME="<>libraryDir<>"/rustup CARGO_HOME="<>libraryDir<>"/cargo ","export RUSTUP_HOME=~/.rustup CARGO_HOME=~/.cargo "]<>If[compilerAdditionsDirectory===None,"","WSTP_COMPILER_ADDITIONS_DIRECTORY=\""<>compilerAdditionsDirectory<>"\" "];
+	prolog=If[DownloadRust,"export RUSTUP_HOME="<>libraryDir<>"/rustup CARGO_HOME="<>libraryDir<>"/cargo ;",""]<>If[compilerAdditionsDirectory===None,"","export WSTP_COMPILER_ADDITIONS_DIRECTORY=\""<>compilerAdditionsDirectory<>"\" "];
 	cargo=If[DownloadRust,libraryDir<>"/cargo/bin/cargo ","~/.cargo/bin/cargo "];
 
 	If[!DirectoryQ[libraryDir],CreateDirectory[libraryDir]];
@@ -143,8 +143,8 @@ Options[BBBuildLibraryWindows]={"CompilerAdditionsDirectory"->None,"ClientVersio
 BBBuildLibraryWindows[OptionsPattern[]]:=Module[{prolog,cargo,powerShell,installRustCommand,installCloneCommand,cloneClientCommand,buildClientCommand,CompilerAdditionsDirectory=OptionValue["CompilerAdditionsDirectory"],ClientVersion=OptionValue["ClientVersion"],DownloadRust=OptionValue["DownloadRust"]},
 	powerShell=FileNameJoin[{Environment["SystemRoot"], "system32", 
      "WindowsPowerShell", "v1.0", "powershell.exe"}];
-	prolog=If[DownloadRust,"$Env:RUSTUP_HOME=\\\""<>libraryDir<>"\\rustup\\\"; $Env:CARGO_HOME=\\\""<>libraryDir<>"\\cargo\\\"; ","$Env:RUSTUP_HOME=\\\"~\\.rustup\\\"; $Env:CARGO_HOME=\\\"~\\.cargo\\\"; "]<>If[CompilerAdditionsDirectory===None,"","$Env:WSTP_COMPILER_ADDITIONS_DIRECTORY=\\\""<>CompilerAdditionsDirectory<>"\\\"; "];
-	cargo=If[DownloadRust,env<>libraryDir<>"\\cargo\\bin\\cargo ","~\\.cargo\\bin\\cargo "];
+	prolog=If[DownloadRust,"$Env:RUSTUP_HOME=\""<>libraryDir<>"\\rustup\"; $Env:CARGO_HOME=\""<>libraryDir<>"\\cargo\"; ",""]<>If[CompilerAdditionsDirectory===None,"","$Env:WSTP_COMPILER_ADDITIONS_DIRECTORY=\""<>CompilerAdditionsDirectory<>"\"; "];
+	cargo=If[DownloadRust,libraryDir<>"\\cargo\\bin\\cargo ","~\\.cargo\\bin\\cargo "];
 
 	If[!DirectoryQ[libraryDir],CreateDirectory[libraryDir]];
 
