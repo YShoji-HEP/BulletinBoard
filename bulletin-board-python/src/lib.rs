@@ -1,3 +1,4 @@
+use std::time::Duration;
 use bbclient::{adaptor::VecShape, DataType};
 use num_complex::Complex64;
 use pyo3::prelude::*;
@@ -6,6 +7,14 @@ use pyo3::prelude::*;
 #[pyfunction]
 fn set_addr(addr: String) -> PyResult<()> {
     bbclient::set_addr(&addr);
+    Ok(())
+}
+
+/// Sets timeout for TCP connections in msec. If the argument is None, timeout is disabled (default).
+#[pyfunction]
+#[pyo3(signature = (timeout=None))]
+fn set_timeout(timeout: Option<u64>) -> PyResult<()> {
+    bbclient::set_timeout(timeout.map(|t| Duration::from_millis(t)));
     Ok(())
 }
 
@@ -295,6 +304,7 @@ fn terminate_server() -> PyResult<()> {
 #[pymodule]
 fn bulletin_board_client(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(set_addr, m)?)?;
+    m.add_function(wrap_pyfunction!(set_timeout, m)?)?;
     m.add_function(wrap_pyfunction!(post_integer, m)?)?;
     m.add_function(wrap_pyfunction!(post_real, m)?)?;
     m.add_function(wrap_pyfunction!(post_complex, m)?)?;

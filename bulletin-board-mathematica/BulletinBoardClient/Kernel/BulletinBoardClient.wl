@@ -9,6 +9,7 @@ BeginPackage["Yshojihep`BulletinBoardClient`"];
 
 BBBuildLibrary::usage = "BBBuildLibrary[] builds the client library.";
 BBSetAddr::usage = "BBSetAddr[address] sets the address of the server.";
+BBSetTimeout::usage = "BBSetTimeout[timeout] sets timeout for TCP connections.";
 BBPost::usage = "BBPost[title, tag(optional), data] sends data to the server.";
 BBRead::usage = "BBRead[title, tag(optional), revisions(optional)] retrives data from the server.";
 BBRelabel::usage = "BBRelabel[titleFrom, tagFrom, titleTo, tagTo] relabels a bulletin.";
@@ -50,6 +51,7 @@ loadFuncitons:=Module[{lib,loader},
 	lib=LibraryFunctionLoad[libraryPath,"load_dbgbb",LinkObject,LinkObject];
 	loader=lib[libraryPath];
 	BBSetAddr=loader["set_addr"];
+	BBSetTimeout=loader["set_timeout"];
 	BBPostInteger=loader["post_integer"];
 	BBPostReal=loader["post_real"];
 	BBPostComplex=loader["post_complex"];
@@ -100,8 +102,8 @@ If[FileExistsQ[libraryPath],
 BBBuildLibrary[\"CompilerAdditionsDirectory\"->\"dir/to/CompilerAdditions\"]
 
 * The version of client can be set by
-BBBuildLibrary[\"ClientVersion\"->\"0.3.1\"]
-Notice that this paclet is compatible with 0.3.1+."
+BBBuildLibrary[\"ClientVersion\"->\"0.3.2\"]
+Notice that this paclet version is compatible with 0.3.2+."
 	];
 ]
 

@@ -60,6 +60,7 @@ Then, copy `target/release/libbulletin_board_mathematica.*` to `BulletinBoardCli
 |Function|Description|
 |-|-|
 |BBSetAddr[address]|Set the address of the server. The address is either "ADDRESS:PORT" or "SOCKETPATH". If this function is not called, the default address is "127.0.0.1:7578".|
+|BBSetTimeout[timeout]|Set timeout for TCP connections in msec. If it is executed without the argument, timeout is disabled (default).|
 |BBPost[title, tag(optional), data]|Post the data to the server. `title` and `tag` are Text. `data` can be Integer, Real, Complex, Text, or List. For List, the types of the elements should be the same and has to have the same number of elements for nested Lists. If tag is not set, the default value "Mathematica" is used.|
 |BBRead[title, tag(optional), revisions(optional)]|Read the bulletin. `revisions` can be Integer or List of Integer.|
 |BBRelabel[titleFrom, tagFrom, titleTo, tagTo]|Relabel a bulletin. The last three arguments can be ommited by setting them as "".|

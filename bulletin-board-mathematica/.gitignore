@@ -2,3 +2,5 @@
 Cargo.lock
 .cargo
 BulletinBoardClient/LibraryResources
+BulletinBoardClient/build
+*.paclet

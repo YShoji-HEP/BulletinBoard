@@ -1,3 +1,4 @@
+use std::time::Duration;
 use bulletin_board_client::{
     adaptor::Pair, adaptor::VecShape, adaptor::VecVecShape, ArrayObject, DataType,
 };
@@ -10,6 +11,23 @@ fn set_addr(link: &mut wstp::Link) {
     assert_eq!(link.test_head("System`List").unwrap(), 1);
     let addr = link.get_string().unwrap();
     bulletin_board_client::set_addr(&addr);
+    link.put_str("Server address updated").unwrap();
+}
+
+#[wll::export(wstp)]
+fn set_timeout(link: &mut wstp::Link) {
+    let argc = link.test_head("System`List").unwrap();
+    match argc {
+        0 => bulletin_board_client::set_timeout(None),
+        1 => {
+            let timeout = link.get_i64().unwrap();
+            bulletin_board_client::set_timeout(Some(Duration::from_millis(
+                timeout.try_into().unwrap(),
+            )));
+        }
+        _ => panic!(),
+    };
+
     link.put_str("Server address updated").unwrap();
 }
 

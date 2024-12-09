@@ -490,9 +490,9 @@ class BulletinRemove extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        title: const Text('Remove'),
+        title: Text('Remove: $title, $tag'),
         content:
-            Text('Pressing Ok will remove ($title, $tag) from the server.'),
+            const Text('Pressing Ok will remove from the server.'),
         actions: [
           TextButton(
               onPressed: () {
