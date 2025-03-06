@@ -1,7 +1,7 @@
 [package]
 name = "bulletin-board-server"
 version = "0.3.2"
-edition = "2021"
+edition = "2024"
 license = "Apache-2.0"
 description = "Object storage for ArrayObject for debugging and data taking purposes."
 repository = "https://github.com/YShoji-HEP/BulletinBoard"
@@ -11,10 +11,10 @@ categories = ["database-implementations", "development-tools::debugging"]
 
 [dependencies]
 ciborium = "=0.2.2"
-serde_bytes = "0.11.15"
-uuid = { version = "1.10.0", features = ["v4"] }
-chrono = "0.4.38"
-parse-size = "1.0.0"
+serde_bytes = "0.11.16"
+uuid = { version = "1.15.1", features = ["v4"] }
+chrono = "0.4.40"
+parse-size = "1.1.0"
 fs_extra = "1.3.0"
-clap = { version = "4.5.20", features = ["derive"] }
+clap = { version = "4.5.31", features = ["derive"] }
 bulletin-board-common = "0.3.2"
