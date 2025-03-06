@@ -30,7 +30,7 @@
 /// Low-level functions that isolate the opening and closing functions of a socket. These can be used to speed up commucation with the server when you do many operations at the same time.
 pub mod low_level;
 
-pub use array_object::{adaptor, ArrayObject, DataType, Pack, Unpack};
+pub use array_object::{ArrayObject, DataType, Pack, TryConcat, Unpack, adaptor};
 
 use low_level::*;
 use std::{
