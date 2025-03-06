@@ -38,13 +38,13 @@ jobs:
         uses: arduino/setup-protoc@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set up Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - name: Set up Rust
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Set up Rinf
+      - name: Setup Rinf
         run: cargo install rinf
       - name: Generate message
         run: rinf message
