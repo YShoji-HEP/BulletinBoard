@@ -1,7 +1,7 @@
 [package]
 name = "bulletin-board-python"
-version = "0.3.2"
-edition = "2021"
+version = "0.3.3"
+edition = "2024"
 license = "Apache-2.0"
 description = "Python client for BulletinBoard"
 repository = "https://github.com/YShoji-HEP/BulletinBoard"
@@ -16,5 +16,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 num-complex = "0.4.6"
-pyo3 = { version = "0.23.3", features = ["num-complex"] }
+pyo3 = { version = "0.23.5", features = ["num-complex"] }
 bbclient = { package = "bulletin-board-client", version = "0.3.3" }

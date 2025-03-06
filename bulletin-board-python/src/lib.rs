@@ -1,7 +1,7 @@
-use std::time::Duration;
-use bbclient::{adaptor::VecShape, DataType};
+use bbclient::{DataType, adaptor::VecShape};
 use num_complex::Complex64;
 use pyo3::prelude::*;
+use std::time::Duration;
 
 /// Sets the server address.
 #[pyfunction]
@@ -98,63 +98,63 @@ fn read_raw(
     };
 
     let list = bbclient::read(&title, tag.as_deref(), revisions).unwrap();
-    let mut res = vec![];
+    let mut res: Vec<PyObject> = vec![];
     for elem in list {
         match elem.datatype() {
             DataType::UnsignedInteger => {
                 if elem.dimension() == 0 {
                     let val: u128 = elem.try_into().unwrap();
-                    res.push(val.to_object(py));
+                    res.push(val.into_pyobject(py).unwrap().into());
                 } else {
                     let VecShape::<u128>(val, shape) = elem.try_into().unwrap();
                     let shape: Vec<usize> =
                         shape.into_iter().map(|x| x.try_into().unwrap()).collect();
-                    res.push((val, shape).to_object(py));
+                    res.push((val, shape).into_pyobject(py).unwrap().into());
                 }
             }
             DataType::SignedInteger => {
                 if elem.dimension() == 0 {
                     let val: i128 = elem.try_into().unwrap();
-                    res.push(val.to_object(py));
+                    res.push(val.into_pyobject(py).unwrap().into());
                 } else {
                     let VecShape::<i128>(val, shape) = elem.try_into().unwrap();
                     let shape: Vec<usize> =
                         shape.into_iter().map(|x| x.try_into().unwrap()).collect();
-                    res.push((val, shape).to_object(py));
+                    res.push((val, shape).into_pyobject(py).unwrap().into());
                 }
             }
             DataType::Real => {
                 if elem.dimension() == 0 {
                     let val: f64 = elem.try_into().unwrap();
-                    res.push(val.to_object(py));
+                    res.push(val.into_pyobject(py).unwrap().into());
                 } else {
                     let VecShape::<f64>(val, shape) = elem.try_into().unwrap();
                     let shape: Vec<usize> =
                         shape.into_iter().map(|x| x.try_into().unwrap()).collect();
-                    res.push((val, shape).to_object(py));
+                    res.push((val, shape).into_pyobject(py).unwrap().into());
                 }
             }
             DataType::Complex => {
                 if elem.dimension() == 0 {
                     let val: Complex64 = elem.try_into().unwrap();
-                    res.push(val.to_object(py));
+                    res.push(val.into_pyobject(py).unwrap().into());
                 } else {
                     let VecShape::<Complex64>(val, shape) = elem.try_into().unwrap();
-                    res.push((val, shape).to_object(py));
+                    res.push((val, shape).into_pyobject(py).unwrap().into());
                 }
             }
             DataType::String => {
                 if elem.dimension() == 0 {
                     let val: String = elem.try_into().unwrap();
-                    res.push(val.to_object(py));
+                    res.push(val.into_pyobject(py).unwrap().into());
                 } else {
                     let VecShape::<String>(val, shape) = elem.try_into().unwrap();
-                    res.push((val, shape).to_object(py));
+                    res.push((val, shape).into_pyobject(py).unwrap().into());
                 }
             }
         }
     }
-    Ok(res.to_object(py))
+    Ok(res.into_pyobject(py).unwrap().into())
 }
 
 /// Relabels a bulletin.
@@ -180,31 +180,39 @@ fn relabel(
 #[pyfunction]
 fn client_version(py: Python<'_>) -> PyResult<PyObject> {
     let client_version = env!("CARGO_PKG_VERSION").to_string();
-    Ok(client_version.to_object(py))
+    Ok(client_version.into_pyobject(py).unwrap().into())
 }
 
 /// Returns the version of the server.
 #[pyfunction]
 fn server_version(py: Python<'_>) -> PyResult<PyObject> {
     let server_version = bbclient::server_version().unwrap();
-    Ok(server_version.to_object(py))
+    Ok(server_version.into_pyobject(py).unwrap().into())
 }
 
 /// Returns the status of the server.
 #[pyfunction]
 fn status_raw(py: Python<'_>) -> PyResult<PyObject> {
-    Ok(bbclient::status().unwrap().to_object(py))
+    Ok(bbclient::status()
+        .unwrap()
+        .into_pyobject(py)
+        .unwrap()
+        .into())
 }
 
 /// Returns the log of the server.
 #[pyfunction]
 fn log(py: Python<'_>) -> PyResult<PyObject> {
-    Ok(bbclient::log().unwrap().to_object(py))
+    Ok(bbclient::log().unwrap().into_pyobject(py).unwrap().into())
 }
 
 #[pyfunction]
 fn view_board_raw(py: Python<'_>) -> PyResult<PyObject> {
-    Ok(bbclient::view_board().unwrap().to_object(py))
+    Ok(bbclient::view_board()
+        .unwrap()
+        .into_pyobject(py)
+        .unwrap()
+        .into())
 }
 
 #[pyfunction]
@@ -212,7 +220,9 @@ fn view_board_raw(py: Python<'_>) -> PyResult<PyObject> {
 fn get_info_raw(py: Python<'_>, title: String, tag: Option<String>) -> PyResult<PyObject> {
     Ok(bbclient::get_info(&title, tag.as_deref())
         .unwrap()
-        .to_object(py))
+        .into_pyobject(py)
+        .unwrap()
+        .into())
 }
 
 #[pyfunction]
@@ -248,7 +258,11 @@ fn load(acv_name: String) -> PyResult<()> {
 /// Shows the list of archive.
 #[pyfunction]
 fn list_archive(py: Python<'_>) -> PyResult<PyObject> {
-    Ok(bbclient::list_archive().unwrap().to_object(py))
+    Ok(bbclient::list_archive()
+        .unwrap()
+        .into_pyobject(py)
+        .unwrap()
+        .into())
 }
 
 /// Renames an archive. This will be applied after after calling reset_server.
