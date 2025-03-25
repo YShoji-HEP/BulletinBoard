@@ -70,28 +70,44 @@ impl ServerOptions {
     }
     pub fn load_options(&self) {
         if self.debug {
-            env::set_var("BB_DEBUG", "");
+            unsafe {
+                env::set_var("BB_DEBUG", "");
+            }
         }
         if let Some(listen_addr) = &self.listen_addr {
-            env::set_var("BB_LISTEN_ADDR", listen_addr);
+            unsafe {
+                env::set_var("BB_LISTEN_ADDR", listen_addr);
+            }
         }
         if let Some(tmp_dir) = &self.tmp_dir {
-            env::set_var("BB_TMP_DIR", tmp_dir);
+            unsafe {
+                env::set_var("BB_TMP_DIR", tmp_dir);
+            }
         }
         if let Some(acv_dir) = &self.acv_dir {
-            env::set_var("BB_ACV_DIR", acv_dir);
+            unsafe {
+                env::set_var("BB_ACV_DIR", acv_dir);
+            }
         }
         if let Some(tot_mem_limit) = &self.tot_mem_limit {
-            env::set_var("BB_TOT_MEM_LIMIT", tot_mem_limit);
+            unsafe {
+                env::set_var("BB_TOT_MEM_LIMIT", tot_mem_limit);
+            }
         }
         if let Some(file_threshold) = &self.file_threshold {
-            env::set_var("BB_FILE_THRETHOLD", file_threshold);
+            unsafe {
+                env::set_var("BB_FILE_THRETHOLD", file_threshold);
+            }
         }
         if let Some(log_file) = &self.log_file {
-            env::set_var("BB_LOG_FILE", log_file);
+            unsafe {
+                env::set_var("BB_LOG_FILE", log_file);
+            }
         }
         if let Some(log_level) = &self.log_level {
-            env::set_var("BB_LOG_LEVEL", log_level.to_string());
+            unsafe {
+                env::set_var("BB_LOG_LEVEL", log_level.to_string());
+            }
         }
         LazyLock::force(&DEBUG);
         LazyLock::force(&LISTEN_ADDR);
@@ -405,7 +421,9 @@ impl BBServer {
             Option<String>,
             Option<String>,
         ) = ciborium::from_reader(&mut *stream)?;
-        logging::debug(format!("(relabel) title_from: {title_from}, tag_from: {tag_from:?}, title_to: {title_to:?}, tag_to: {tag_to:?}."));
+        logging::debug(format!(
+            "(relabel) title_from: {title_from}, tag_from: {tag_from:?}, title_to: {title_to:?}, tag_to: {tag_to:?}."
+        ));
         let tag_from = self.get_tag("read", &title_from, tag_from, Some(&mut *stream))?;
         self.bulletinboard
             .relabel(title_from, tag_from, title_to, tag_to)?;

@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "bulletin_board_client"
-requires-python = ">=3.5"
+requires-python = ">=3.8"
 dependencies = ["numpy"]
 classifiers = [
     "Topic :: Database",
